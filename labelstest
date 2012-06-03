@@ -1,0 +1,10 @@
+#!/bin/sh
+for k in $(eval echo {1..12})
+do
+	echo "Testing label $k: \c"
+	sed "s/k=.*/k=$k/" sample-input > tmp
+	mv tmp sample-input
+	./inlh < sample-input > sample-output
+	S=`egrep 'Number of pivots:' sample-output`
+	echo " "$S
+done
