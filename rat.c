@@ -7,8 +7,15 @@
 	/* sprintf	*/
 #include "rat.h"
 
-#include "mp.h"
 	/* for improved precision in  ratadd(a, b)	*/
+
+Rat itorat(int num, int den)
+{
+	Rat r;
+	itomp(num, r.num);
+	itomp(den, r.den);
+	return r;
+}
 
 Rat ratadd (Rat a, Rat b)
 {
@@ -18,19 +25,26 @@ Rat ratadd (Rat a, Rat b)
     return ratreduce(a);
     */
 
-    mp num, den, x, y;
+    mp num, den, x, y, t;
 
-    itomp (a.num, num) ;
-    itomp (a.den, den) ;
-    itomp (b.num, x) ;
-    itomp (b.den, y) ;
-    mulint (y, num, num);
+    /*itomp (a.num, num) ;*/
+	copy(num, a.num);
+    /*itomp (a.den, den) ;*/
+	copy(den, a.den);
+    /*itomp (b.num, x) ;*/
+	copy(x, b.num);
+    /*itomp (b.den, y) ;*/
+	copy(y, b.den);
+    mulint (y, num, t);
+	copy(num, t);
     mulint (den, x, x);
     linint (num, 1, x, 1);
     mulint (y, den, den);
     reduce(num, den) ;
-    mptoi( num, &a.num, 1 );
-    mptoi( den, &a.den, 1 );
+    /*mptoi( num, &a.num, 1 );
+    mptoi( den, &a.den, 1 );*/
+	copy(a.num, num);
+	copy(a.den, den);
     return a ; 
 }
 
@@ -42,11 +56,14 @@ Rat ratdiv (Rat a, Rat b)
 Rat ratfromi(int i)
 {
     Rat tmp;
-    tmp.num = i;
-    tmp.den = 1;
+    /*tmp.num = i; */
+	itomp(i, tmp.num);
+    /*tmp.den = 1; */
+	itomp(1, tmp.den);
     return tmp;
 }
 
+/*
 int ratgcd(int a, int b)
 {
     int c;
@@ -60,83 +77,128 @@ int ratgcd(int a, int b)
         b = c ;
         }
     return a;
+}*/
+
+void ratgcd(mp a, mp b, mp c)
+{
+	mp d;
+	copy(c, a);
+	copy(d, b);
+	gcd(c, d);
 }
 
 Rat ratinv (Rat a)
 {
-    int x;
+    mp x;
 
-    x = a.num ;
-    a.num = a.den ;
-    a.den = x ;
+    /*x = a.num ;*/
+	copy(x, a.num);
+    /*a.num = a.den ;*/
+	copy(a.num, a.den);
+    /*a.den = x ;*/
+	copy(a.den, x);
     return a;
 }
 Bool ratiseq (Rat a, Rat b)
 {
-    return (a.num == b.num && a.den == b.den);
+	/*return (a.num == b.num && a.den == b.den);*/
+	mp c;
+	itomp(1, c);
+	int x = comprod(a.num, c, b.num, c);
+	int y = comprod(a.den, c, b.den, c);
+    return ((x == 0) && (y == 0));
 }
 
 Bool ratgreat (Rat a, Rat b)
 {
     Rat c = ratadd(a, ratneg(b));
-    return (c.num > 0);
+    return (positive(c.num));
 }
 
 Rat ratmult (Rat a, Rat b)
 {
-    int x;
+    mp x;
 
     /* avoid overflow in intermediate product by cross-cancelling first
      */
-    x = a.num ;
-    a.num = b.num ;
-    b.num = x ;
+    /*x = a.num ; */
+	copy(x, a.num);
+    /*a.num = b.num ;*/
+	copy(a.num, b.num);
+    /*b.num = x ;*/
+	copy(b.num, x);
     a = ratreduce(a);
     b = ratreduce(b);
-    a.num *= b.num;
-    a.den *= b.den;
+    /*a.num *= b.num;*/
+	mulint(a.num, b.num, x);
+	copy(a.num, x);
+    /*a.den *= b.den;*/
+	mulint(a.den, b.den, x);
+	copy(a.den, x);
     return ratreduce(a);        /* a  or  b  might be non-normalized    s*/
 }
 
 Rat ratneg (Rat a)
         /* returns -a                                           */
 {
-    a.num = - a.num;
+    /*a.num = - a.num;*/
+	changesign(a.num);
     return  a;
 }
 
 Rat ratreduce (Rat a)
 {
-    if (a.num == 0)
-        a.den = 1;
+    if (zero(a.num))
+	{
+		/*a.den = 1;*/
+		itomp(1, a.den);
+	}
     else
-        {
-        int div;
-        if (a.den < 0)
-            {
-            a.den = -a.den;
-            a.num = -a.num;
-            }
-        div = ratgcd(a.den, a.num);
-        a.num = a.num/div;
-        a.den = a.den/div;
-        }
+	{
+		mp div;
+		mp c;
+		if (negative(a.den))
+		{
+			/*a.den = -a.den;*/
+			changesign(a.den);
+			/*a.num = -a.num;*/
+			changesign(a.num);
+		}
+		/*div = ratgcd(a.den, a.num);*/
+		ratgcd(a.den, a.num, div);
+		/*a.num = a.num/div;*/
+		divint(a.num, div, c);
+		copy(a.num, c);
+		/*a.den = a.den/div;*/
+		divint(a.den, div, c);
+		copy(a.den, c);
+	}
     return a;
 }
 
 int rattoa (Rat r, char *s)
 {
+	char str[MAXSTR];
     int l, a;
-    l = sprintf(s, "%d", r.num);
-    if (r.den != 1)
-        {
-        a = sprintf(s+l, "/%d", r.den);
+    /*l = sprintf(s, "%d", r.num);*/
+	mptoa(r.num, str);
+    l = sprintf(s, "%s", str);
+    /*if (r.den != 1)*/
+	if(!one(r.den))
+    {
+        /*a = sprintf(s+l, "/%d", r.den);*/
+		mptoa(r.den, str);
+        a = sprintf(s+l, "/%s", str);
         l += a + 1;
-        }
+    }
     return l;
 }
 
 double rattodouble(Rat a)
 {
-    return (double) a.num / (double) a.den ;
+	int num, den;
+	mptoi(a.num, &num, 1);
+	mptoi(a.den, &den, 1);
+    /*return (double) a.num / (double) a.den ;*/
+	return (double)num / (double)den;
 }

@@ -129,16 +129,19 @@ void isqdok (void)
     int isqpos = 1;
     for (i=0; i<n; i++)
         {
-        if (vecd[i].num < 0)
+        /*if (vecd[i].num < 0)*/
+		if (negative(vecd[i].num))
             {
             fprintf(stderr, "Covering vector  d[%d] = %d/%d negative\n",
                     i+1, vecd[i].num, vecd[i].den);
             errexit("Cannot start Lemke.");
             }
-        else if (rhsq[i].num < 0)
+        /*else if (rhsq[i].num < 0)	*/
+        else if (negative(rhsq[i].num))
             {
             isqpos = 0;
-            if (vecd[i].num == 0)
+            /*if (vecd[i].num == 0)*/
+            if (zero(vecd[i].num))
                 {
                 fprintf(stderr, "Covering vector  d[%d] = 0  ", i+1);
                 fprintf(stderr, "where  q[%d] = %d/%d  is negative.\n",
@@ -177,7 +180,7 @@ void filltableau (void)
         /* fill tableau from  M, q, d   */
 {
     int i,j;
-    int den, num;
+    mp den, num;
     mp tmp, tmp2, tmp3;
     for (j=0; j<=n+1; j++)
         {
@@ -185,26 +188,65 @@ void filltableau (void)
         itomp(ONE, scfa[j]);
         for (i=0; i<n; i++)
             {
-            den = (j==0) ? vecd[i].den :
-                  (j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;
-            itomp(den, tmp);
+            /*den = (j==0) ? vecd[i].den :
+                  (j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;*/
+			if(j == 0)
+			{
+				copy(den, vecd[i].den);
+			}
+			else if(j == RHS)
+			{
+				copy(den, rhsq[i].den);
+			}
+			else
+			{
+				copy(den, lcpM[i][j-1].den);
+			}
+            copy(tmp, den);
             lcm(scfa[j], tmp);
             }
         /* fill in col  j  of  A    */
         for (i=0; i<n; i++)
             {
+			/*
             den = (j==0) ? vecd[i].den :
-                  (j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;
-            num = (j==0) ? vecd[i].num :
-                  (j==RHS) ? rhsq[i].num : lcpM[i][j-1].num ;
+                  (j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;*/
+			if(j == 0)
+			{
+				copy(den, vecd[i].den);
+			}
+			else if(j == RHS)
+			{
+				copy(den, rhsq[i].den);
+			}
+			else
+			{
+				copy(den, lcpM[i][j-1].den);
+			}
+            /*num = (j==0) ? vecd[i].num :
+                  (j==RHS) ? rhsq[i].num : lcpM[i][j-1].num ;*/
+			if(j == 0)
+			{
+				copy(num, vecd[i].num);
+			}
+			else if(j == RHS)
+			{
+				copy(num, rhsq[i].num);
+			}
+			else
+			{
+				copy(num, lcpM[i][j-1].num);
+			}
                 /* cols 0..n of  A  contain LHS cobasic cols of  Ax = b     */
                 /* where the system is here         -Iw + dz_0 + Mz = -q    */
                 /* cols of  q  will be negated after first min ratio test   */
             /* A[i][j] = num * (scfa[j] / den),  fraction is integral       */
-            itomp (den, tmp);
+            /*itomp (den, tmp);*/
+			copy(tmp, den);
             copy (tmp3, scfa[j]);
             divint(tmp3, tmp, tmp2);        /* divint modifies 1st argument */
-            itomp (num, tmp);
+            /*itomp (num, tmp);*/
+			copy(tmp, num);
             mulint(tmp2, tmp, A[i][j]);
             }
         }   /* end of  for(j=...)   */
@@ -386,6 +428,7 @@ Bool notokcopysol (void)
             mulint(scfa[Z(i)], A[row][RHS], num);
             mulint(det, scfa[RHS], den);
             reduce(num, den);
+			/*
             if ( mptoi(num, &(solz[i-1].num), 1) )
                 {
                 printf("(Numerator of z%d overflown)\n", i);
@@ -395,7 +438,9 @@ Bool notokcopysol (void)
                 {
                 printf("(Denominator of z%d overflown)\n", i);
                 notok = 1;
-                }
+                }*/
+			copy(solz[i-1].num, num);
+			copy(solz[i-1].den, den);
             }
         else            /* i is nonbasic    */
             solz[i-1] = ratfromi(0);

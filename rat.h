@@ -3,15 +3,20 @@
  * computing with rationals
  * 22 Apr 2000
  */
+#include "mp.h"
+
+#define MAXSTR 100
 
 typedef int Bool;        /* Boolean value 0/1                   */
 
 typedef struct 
     {
-    int        num;    /* numerator    */
-    int        den;    /* denominator  */
+    mp        num;    /* numerator    */
+    mp        den;    /* denominator  */
     }
     Rat;
+
+Rat itorat(int num, int den);
 
 /* returns sum  a+b, normalized                         */
 Rat ratadd (Rat a, Rat b);
@@ -22,8 +27,9 @@ Rat ratdiv (Rat a, Rat b);
 /* converts integer i to rational                       */
 Rat ratfromi(int i);
 
-/* computes gcd of integers  a  and  b,  0 if both 0    */
-int ratgcd(int a, int b);
+/* computes gcd of integers  a  and  b,  0 if both 0 and stores the value in c  
+int ratgcd(int a, int b);*/
+void ratgcd(mp a, mp b, mp c);
 
 /* returns Boolean condition that a > b                 */
 Bool ratgreat (Rat a, Rat b);

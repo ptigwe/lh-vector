@@ -6,6 +6,7 @@
  *      -v      verbose: output tableau at every pivoting step
  */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
         /*  atoi        */
@@ -115,8 +116,9 @@ void readnrats (Rat *v, const char *info)
                 den = 1;  
                 }
             }
-        v[j].num = num ;
-        v[j].den = den ;
+        /*v[j].num = num ;
+        v[j].den = den ;*/
+		v[j] = itorat(num, den);
         } 
 }   /* end of readnrats  */
 
@@ -305,12 +307,16 @@ void convertd()
 }
 
 void convert()
-{
+{	
 	Rat o = ratfromi(1);
-	Rat a = maxMatrix(A, m, n);
-	a = (rattodouble(a) > 0) ? ratadd(a, o) : a;
-	Rat b = maxMatrix(B, m, n);
-	b = (rattodouble(b) > 0) ? ratadd(b, o) : b;
+	
+	Rat ma = maxMatrix(A, m, n);
+	Rat a = ratfromi(ceil(rattodouble(ma)));
+	a = (ratiseq(a, ma)) ? ratadd(a, o) : a;
+	
+	Rat mb = maxMatrix(B, m, n);
+	Rat b = ratfromi(ceil(rattodouble(ma)));
+	b = (ratiseq(b, mb)) ? ratadd(b, o) : b;
 	
 	complementMatrix(A, a, m, n);
 	complementMatrix(B, b, m, n);

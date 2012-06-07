@@ -2,8 +2,7 @@ alloc.o: alloc.c alloc.h
 col.o: col.c col.h
 mp.o: mp.c mp.h
 rat.o: rat.c rat.h mp.h
-glemke.o: glemke.c alloc.h col.h rat.h lemke.h gmp.h gmpwrap.h
-inlemke.o: inlemke.c alloc.h col.h rat.h lemke.h
-inlemkehowson.o: inlemkehowson.c alloc.h col.h rat.h lemke.h
+lemke.o: lemke.c alloc.h col.h rat.h mp.h lemke.h
+inlemke.o: inlemke.c alloc.h col.h rat.h mp.h lemke.h
 gmpwrap.o: gmpwrap.c gmp.h gmpwrap.h
-glemke.o: glemke.c alloc.h col.h rat.h lemke.h gmp.h gmpwrap.h
+glemke.o: glemke.c alloc.h col.h rat.h mp.h lemke.h gmp.h gmpwrap.h

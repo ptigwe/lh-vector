@@ -14,6 +14,8 @@
 /* INTSIZE is number of bytes for integer       */
 /* 32/64 bit machines                           */
 /***********************************************/
+#ifndef MP_H
+#define MP_H
 #ifndef B64
 /*32 bit machines */
 #define FORMAT "%4.4u"
@@ -161,4 +163,5 @@ void reduce(mp Na,mp Da);
 
 void digits_overflow();
 
+#endif
 /* end of  mp.h  */
