@@ -26,6 +26,8 @@ static int n; 	/* LCP dimension here */
 
 int m, n1, k;
 
+FILE* lcpout;
+
 /* max no of characters + 1 (for terminating '\0') 
  * of a string  s  declared as  char s[MAXSTR] 
  * to be read from stdin by readstr
@@ -306,6 +308,55 @@ void convertd()
 	}
 }
 
+void printlcpM()
+{
+	fprintf(lcpout, "n= %d\nM=\n", n);
+	int i;
+	for(i = 0; i < n; i++)
+	{
+		int j;
+		for(j = 0; j < n; j++)
+		{
+			char str[MAXSTR];
+			rattoa(lcpM[i][j], str);
+			fprintf(lcpout, "%s ", str);
+		}
+		fprintf(lcpout, "\n");
+	}
+}
+
+void printlcpq()
+{
+	fprintf(lcpout, "q= ");
+	int i;
+	for(i = 0; i < n; i++)
+	{
+		char str[MAXSTR];
+		rattoa(rhsq[i], str);
+		fprintf(lcpout, "%s ", str);
+	}
+}
+
+void printlcpd()
+{
+	fprintf(lcpout, "\nd= ");
+	int i;
+	for(i = 0; i < n; i++)
+	{
+		char str[MAXSTR];
+		rattoa(vecd[i], str);
+		fprintf(lcpout, "%s ", str);
+	}
+}
+
+void printLCP()
+{
+	printlcpM();
+	printlcpq();
+	printlcpd();
+	fclose(lcpout);
+}
+
 void convert()
 {	
 	Rat o = ratfromi(1);
@@ -341,13 +392,16 @@ int main(int argc, char *argv[])
     flags.blexstats  = 1;
 
     /* parse options    */
-    while ( (c = getopt (argc, argv, "iv")) != -1)
+    while ( (c = getopt (argc, argv, "if:v")) != -1)
         switch (c)
             {
             case 'i':
                 flags.binteract  = 1;
                 printf("Interactive flag set.\n");
                 break;
+			case 'f':
+				lcpout = fopen(optarg, "w+");
+				break;
             case 'v':
                 flags.bouttabl   = 1;
                 printf("Verbose tableau output.\n");
@@ -367,6 +421,10 @@ int main(int argc, char *argv[])
 
 	readGame();
 	convert();
+	if(lcpout != NULL)
+	{
+		printLCP();
+	}
     runlemke(flags); 
     return 0;
 }
