@@ -6,7 +6,7 @@
 
 CC = gcc
 # -lm  links the math library in
-CFLAGS = -ansi -Wall -O3 -g
+CFLAGS = -ansi -Wall -O3 -g -lm
 
 # needed for gmp library
 LIBDIR     = /usr/local/lib
