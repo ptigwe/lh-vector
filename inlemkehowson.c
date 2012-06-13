@@ -92,9 +92,9 @@ void readconf (const char *s)
  */
 void readnrats (Rat *v, const char *info)
 {
-    char srat[MAXSTR], snum[MAXSTR], sden[MAXSTR];
+    char srat[MAXSTR];
     int j ;
-    int num,den;
+    /*int num,den;*/
     
     for (j=0; j<n; j++)
         {
@@ -103,7 +103,7 @@ void readnrats (Rat *v, const char *info)
             fprintf(stderr, "Missing input of %s[%d]\n", info, j+1);
             notimpl("");
             }
-        atoaa(srat, snum, sden);
+        /*atoaa(srat, snum, sden);
         num = atoi(snum);
         if (sden[0]=='\0') 
             den = 1;
@@ -117,10 +117,10 @@ void readnrats (Rat *v, const char *info)
                         den, info, j+1);
                 den = 1;  
                 }
-            }
+            }*/
         /*v[j].num = num ;
         v[j].den = den ;*/
-		v[j] = itorat(num, den);
+		v[j] = ratfroma(srat, info, j);
         } 
 }   /* end of readnrats  */
 

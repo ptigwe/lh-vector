@@ -4,6 +4,9 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 	/* sprintf	*/
 #include "rat.h"
 
@@ -14,7 +17,72 @@ Rat itorat(int num, int den)
 	Rat r;
 	itomp(num, r.num);
 	itomp(den, r.den);
+	ratreduce(r);
 	return r;
+}
+
+Rat parseRat(char* srat, const char* info, int j)
+{
+	char snum[MAXSTR], sden[MAXSTR];
+	int num, den;
+	
+	atoaa(srat, snum, sden);
+	num = atoi(snum);
+    if (sden[0]=='\0') 
+        den = 1;
+    else
+    {
+        den = atoi(sden);
+        if (den<1)
+        {
+            fprintf(stderr, "Warning: Denominator "); 
+            fprintf(stderr, "%d of %s[%d] set to 1 since not positive\n", 
+                    den, info, j+1);
+            den = 1;  
+        }
+    }
+	Rat r = itorat(num, den);
+	return r;
+}
+
+Rat parseDecimal(char* srat, const char* info, int j)
+{
+	double x;
+	int count;
+	char* sub;
+	
+	sscanf(srat, "%lf", &x);
+	
+	sub = strchr(srat, '.');
+	if(strchr(sub+1, '.') != NULL)
+	{
+		fprintf(stderr, "Error: Decimal ");
+		fprintf(stderr, "%s of %s[%d] has more than one decimal point\n", srat, info, j);
+		exit(1);
+	}
+	count = strlen(sub+1);
+	
+	int num = floor(x * pow(10, count));
+	int den = pow(10, count);
+	
+	Rat rat = itorat(num, den);
+	return rat;
+}
+
+Rat ratfroma(char* srat, const char* info, int j)
+{
+	char* pos;
+	Rat rat;
+	
+	if((pos = strchr(srat, '.')) != NULL)
+	{
+		rat = parseDecimal(srat, info, j);
+	}
+	else
+	{
+		rat = parseRat(srat, info, j);
+	}
+	return rat;
 }
 
 Rat ratadd (Rat a, Rat b)

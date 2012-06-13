@@ -18,6 +18,10 @@ typedef struct
 
 Rat itorat(int num, int den);
 
+Rat ratfroma(char* str, const char* info, int j);
+
+Rat atorat(char* str);
+
 /* returns sum  a+b, normalized                         */
 Rat ratadd (Rat a, Rat b);
 
