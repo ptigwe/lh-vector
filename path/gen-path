@@ -1,0 +1,7 @@
+#!/bin/sh
+
+./path < path-input > path-output
+cat ../sample-input path-output > lh-input
+../inlh -i < lh-input
+
+
