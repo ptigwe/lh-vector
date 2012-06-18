@@ -132,8 +132,10 @@ void isqdok (void)
         /*if (vecd[i].num < 0)*/
 		if (negative(vecd[i].num))
             {
-            fprintf(stderr, "Covering vector  d[%d] = %d/%d negative\n",
-                    i+1, vecd[i].num, vecd[i].den);
+			char str[MAXSTR];
+			rattoa(vecd[i], str);
+            fprintf(stderr, "Covering vector  d[%d] = %s negative\n",
+                    i+1, str);
             errexit("Cannot start Lemke.");
             }
         /*else if (rhsq[i].num < 0)	*/
@@ -143,9 +145,11 @@ void isqdok (void)
             /*if (vecd[i].num == 0)*/
             if (zero(vecd[i].num))
                 {
+				char str[MAXSTR];
+				rattoa(rhsq[i], str);
                 fprintf(stderr, "Covering vector  d[%d] = 0  ", i+1);
-                fprintf(stderr, "where  q[%d] = %d/%d  is negative.\n",
-                        i+1, rhsq[i].num, rhsq[i].den);
+                fprintf(stderr, "where  q[%d] = %s  is negative.\n",
+                        i+1, str);
                 errexit("Cannot start Lemke.");
                 }
             }

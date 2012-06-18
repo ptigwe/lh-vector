@@ -5,6 +5,9 @@
 
 /* include before:  "gmp.h"	*/
 
+#ifndef GMPWRAP_H
+#define GMPWRAP_H
+
 typedef mpz_t  gmpt ;
 
 #define MAXGMPCHARS 500
@@ -70,3 +73,4 @@ int gmptoi(gmpt a, int *result, int bcomplain) ;
 /* divide  a  and  b  both by  gcd(a,b)	*/
 void greduce(gmpt a, gmpt b);
 
+#endif

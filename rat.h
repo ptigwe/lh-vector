@@ -3,18 +3,45 @@
  * computing with rationals
  * 22 Apr 2000
  */
+#ifdef GLEMKE
+
+#include "gmp.h"
+#include "gmpwrap.h"
+
+#endif
 #include "mp.h"
 
+
 #define MAXSTR 100
+
+#ifndef TRUE
+#define TRUE 1L
+#endif
+#ifndef FALSE
+#define FALSE 0L
+#endif
 
 typedef int Bool;        /* Boolean value 0/1                   */
 
 typedef struct 
-    {
+{
+	#ifdef GLEMKE
+    gmpt        num;    /* numerator    */
+    gmpt        den;    /* denominator  */
+	#else
     mp        num;    /* numerator    */
     mp        den;    /* denominator  */
-    }
-    Rat;
+	#endif
+}
+Rat;
+
+#ifdef GLEMKE
+
+Rat ratinit();
+
+void ratclear(Rat rat);
+
+#endif
 
 Rat itorat(int num, int den);
 
@@ -33,7 +60,11 @@ Rat ratfromi(int i);
 
 /* computes gcd of integers  a  and  b,  0 if both 0 and stores the value in c  
 int ratgcd(int a, int b);*/
+#ifdef GLEMKE
+void ratgcd(gmpt a, gmpt b, gmpt c);
+#else
 void ratgcd(mp a, mp b, mp c);
+#endif
 
 /* returns Boolean condition that a > b                 */
 Bool ratgreat (Rat a, Rat b);

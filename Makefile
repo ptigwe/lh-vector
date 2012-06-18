@@ -6,7 +6,11 @@
 
 CC = gcc
 # -lm  links the math library in
-CFLAGS = -ansi -Wall -O3 -g -lm
+CFLAGS = -ansi -Wall -g
+
+LDFLAGS = -lm
+
+GMPLIB = -lgmp
 
 # needed for gmp library
 LIBDIR     = /usr/local/lib
@@ -16,29 +20,43 @@ LIBDIR     = /usr/local/lib
 
 DEPFILE = Depend
 
-COMOBJ  = alloc.o col.o mp.o rat.o
+COMOBJ  = alloc.o col.o mp.o
 
-INLEMOBJ  = lemke.o inlemke.o 
+LEMKE   = rat.o lemke.o
 
-INLHOBJ = inlemkehowson.o lemke.o 
+GLEMKE  = gmpwrap.o grat.o glemke.o
 
-GMPOBJ = gmpwrap.o glemke.o
+INLEMOBJ  = inlemke.o 
 
-ALLOBJ = $(COMOBJ) $(INLEMOBJ) $(TREEOBJ) $(METHOBJ) $(GMPOBJ)
+INLHOBJ = inlemkehowson.o
+
+ALLOBJ = $(COMOBJ) $(INLEMOBJ) $(LEMKE) $(GLEMKE) $(INGLEMOBJ) $(INLHOBJ) $(INGLHOBJ)
 
 # local variables for single substitutions
 
 GMP = $(COMOBJ) $(TREEOBJ) $(METHOBJ) $(GMPOBJ) 
 
-INLEMKE = $(COMOBJ) $(INLEMOBJ)
+INLEMKE = $(COMOBJ) $(LEMKE) $(INLEMOBJ)
 
-INLH = $(COMOBJ) $(INLHOBJ)
+INGLEMKE = $(COMOBJ) $(GLEMKE) $(INLEMOBJ)
+
+INLH = $(COMOBJ) $(LEMKE) $(INLHOBJ)
+
+INGLH = $(COMOBJ) $(GLEMKE) $(INLHOBJ)
 
 inlh: $(INLH)
-	$(CC) $(CFLAGS) $(INLH) -o inlh
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) inlemkehowson.c -o inlemkehowson.o;
+	$(CC) $(CFLAGS) $(INLH) $(LDFLAGS) -o inlh
+
+inglh: $(INGLH)
+	$(CC) -c  -D GLEMKE $(CFLAGS) $(CPPFLAGS) inlemkehowson.c -o inlemkehowson.o;
+	$(CC) $(CFLAGS) $(INGLH) $(LDFLAGS) $(GMPLIB) -o inlh
 
 inlemke: $(INLEMKE)
-	$(CC) $(CFLAGS) $(INLEMKE) -o inlemke 
+	$(CC) $(CFLAGS) $(INLEMKE) -o inlemke
+	
+inglemke: $(INGLEMKE)
+	$(CC) -D GLEMKE $(CFLAGS) $(INGLEMKE) $(GMP) -o inlemke 
 
 depend:: 
 	gcc -MM $(ALLOBJ:.o=.c) > $(DEPFILE)

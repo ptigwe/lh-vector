@@ -2,6 +2,7 @@
  * 14 July 2000
  * LCP solver with GNU Multi Precision arithmetic
  */
+#define GLEMKE
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -143,20 +144,24 @@ void isqdok (void)
     int isqpos = 1;
     for (i=0; i<n; i++)
 	{
-	if (vecd[i].num < 0)
+	if (gnegative(vecd[i].num))
 	    {
-	    fprintf(stderr, "Covering vector  d[%d] = %d/%d negative\n",
-		    i+1, vecd[i].num, vecd[i].den);
+		char str[MAXSTR];
+		rattoa(vecd[i], str);
+	    fprintf(stderr, "Covering vector  d[%d] = %s negative\n",
+		    i+1, str);
 	    errexit("Cannot start Lemke.");
 	    }
-	else if (rhsq[i].num < 0)
+	else if (gnegative(rhsq[i].num))
 	    {
 	    isqpos = 0;
-	    if (vecd[i].num == 0)
+	    if (gzero(vecd[i].num))
 		{
+		char str[MAXSTR];
+		rattoa(rhsq[i], str);
 		fprintf(stderr, "Covering vector  d[%d] = 0  ", i+1);
-		fprintf(stderr, "where  q[%d] = %d/%d  is negative.\n",
-			i+1, rhsq[i].num, rhsq[i].den);
+		fprintf(stderr, "where  q[%d] = %s  is negative.\n",
+			i+1, str);
 		errexit("Cannot start Lemke.");
 		}
 	    }
@@ -191,44 +196,85 @@ void filltableau (void)
 	/* fill tableau from  M, q, d   */
 {
     int i,j;
-    int den, num;
+    gmpt den, num;
     gmpt tmp, tmp2; 
 
     ginit(tmp); ginit(tmp2); 
+	ginit(den); ginit(num);
     for (j=0; j<=n+1; j++)
 	{
-	/* compute lcm  scfa[j]  of denominators for  col  j  of  A         */
-	gitomp(1, scfa[j]);
-	for (i=0; i<n; i++)
-	    {
-	    den = (j==0) ? vecd[i].den :
-		  (j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;
-	    gitomp(den, tmp);
-	    glcm(scfa[j], tmp);
+		/* compute lcm  scfa[j]  of denominators for  col  j  of  A         */
+		gitomp(1, scfa[j]);
+		for (i=0; i<n; i++)
+		{
+	    	/*den = (j==0) ? vecd[i].den :
+		  	(j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;*/
+			if(j == 0)
+			{
+				gset(den, vecd[i].den);
+			}
+			else if(j == RHS)
+			{
+				gset(den, rhsq[i].den);
+			}
+			else
+			{
+				gset(den, lcpM[i][j-1].den);
+			}
+		
+	    	gset(tmp, den);
+	    	glcm(scfa[j], tmp);
 
-	    if (j == 0)
-	    	record_digits = mpz_sizeinbase( scfa[j], 10)/4 ;
-	    }
-	/* fill in col  j  of  A    */
-	for (i=0; i<n; i++)
-	    {
-	    den = (j==0) ? vecd[i].den :
-		  (j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;
-	    num = (j==0) ? vecd[i].num :
-		  (j==RHS) ? rhsq[i].num : lcpM[i][j-1].num ;
-		/* cols 0..n of  A  contain LHS cobasic cols of  Ax = b     */
-		/* where the system is here         -Iw + dz_0 + Mz = -q    */
-		/* cols of  q  will be negated after first min ratio test   */
-	    /* A[i][j] = num * (scfa[j] / den),  fraction is integral       */
-	    gitomp (den, tmp);
-	    gexactdivint(scfa[j], tmp, tmp2);   
-	    gitomp (num, tmp);
-	    gmulint(tmp2, tmp, A[i][j]);
-	    }
+	    	if (j == 0)
+	    		record_digits = mpz_sizeinbase( scfa[j], 10)/4 ;
+		}
+		/* fill in col  j  of  A    */
+		for (i=0; i<n; i++)
+		{
+	    	/*den = (j==0) ? vecd[i].den :
+		  	(j==RHS) ? rhsq[i].den : lcpM[i][j-1].den ;*/
+			if(j == 0)
+			{
+				gset(den, vecd[i].den);
+			}
+			else if(j == RHS)
+			{
+				gset(den, rhsq[i].den);
+			}
+			else
+			{
+				gset(den, lcpM[i][j-1].den);
+			}
+	    	/*num = (j==0) ? vecd[i].num :
+		  	(j==RHS) ? rhsq[i].num : lcpM[i][j-1].num ;*/
+			if(j == 0)
+			{
+				gset(num, vecd[i].num);
+			}
+			else if(j == RHS)
+			{
+				gset(num, rhsq[i].num);
+			}
+			else
+			{
+				gset(num, lcpM[i][j-1].num);
+			}
+			/* cols 0..n of  A  contain LHS cobasic cols of  Ax = b     */
+			/* where the system is here         -Iw + dz_0 + Mz = -q    */
+			/* cols of  q  will be negated after first min ratio test   */
+	    	/* A[i][j] = num * (scfa[j] / den),  fraction is integral       */
+	    	/*gitomp (den, tmp);*/
+			gset(tmp, den);
+	    	gexactdivint(scfa[j], tmp, tmp2);   
+	    	/*gitomp (num, tmp);*/
+			gset(tmp, num);
+	    	gmulint(tmp2, tmp, A[i][j]);
+		}
 	}   /* end of  for(j=...)   */
     inittablvars();
     gitomp (-1, det);
     gclear(tmp); gclear(tmp2); 
+	gclear(num); gclear(den);
 }       /* end of filltableau()         */
 
 /* ---------------- output routines ------------------- */
@@ -251,7 +297,7 @@ void outlcp (void)
 	for (j=0; j<n; j++)
 	    {
 	    a = lcpM [i] [j];
-	    if (a.num == 0)
+	    if (gzero(a.num))
 		colpr(".");
 	    else
 		{
@@ -385,6 +431,7 @@ void outsol (void)
 	    }
 	}   /* end of  for (i=...)          */
     colout();
+	printf("\n Number of pivots: %d\n", pivotcount);
     gclear(num); gclear(den);
 }       /* end of outsol                */
 
@@ -402,11 +449,12 @@ Bool notokcopysol (void)
     
     for (i=1; i<=n; i++) 
 	if ( (row = bascobas[i]) < n)  /*  i  is a basic variable */
-	    {
+	{
 	    /* value of  Z(i):  scfa[Z(i)]*rhs[row] / (scfa[RHS]*det)   */
 	    gmulint(scfa[Z(i)], A[row][RHS], num);
 	    gmulint(det, scfa[RHS], den);
 	    greduce(num, den);
+		/*
             if ( gmptoi(num, &(solz[i-1].num), 1) )
                 {
                 printf("(Numerator of z%d overflown)\n", i);
@@ -416,8 +464,10 @@ Bool notokcopysol (void)
                 {
                 printf("(Denominator of z%d overflown)\n", i);
 		notok = 1;
-		}
-	    }
+		}*/
+		gset(solz[i-1].num, num);
+		gset(solz[i-1].den, den);
+	}
 	else            /* i is nonbasic    */
 	    solz[i-1] = ratfromi(0);
     gclear(num); gclear(den);

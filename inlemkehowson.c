@@ -181,22 +181,27 @@ void readGame (void)
 Rat maxrow(Rat* rat, int n)
 {
 	int i;
-	Rat M = ratfromi(0);
+	Rat Mrow = ratfromi(0);
 	for(i = 0; i < n; ++i)
 	{
-		M = ratgreat(M,rat[i]) ? M : rat[i];
+		Mrow = ratgreat(Mrow,rat[i]) ? Mrow : rat[i];
 	}
-	return M;
+	char str[MAXSTR];
+	rattoa(Mrow, str);
+	printf("Mrow=%s\n", str);
+	return Mrow;
 }
 
 Rat maxMatrix(Rat** rat, int m, int n)
 {
 	int i;
+	int tmpm = m;
+	int tmpn = n;
 	Rat M = ratfromi(0);
-	for(i = 0; i < m; ++i)
+	for(i = 0; i < tmpm; ++i)
 	{
-		Rat m = maxrow(rat[i],n);
-		M = ratgreat(M, m) ? M : m;
+		Rat r = maxrow(rat[i], tmpn);
+		M = ratgreat(M, r) ? M : r;
 	}
 	return M;
 }
@@ -362,11 +367,11 @@ void convert()
 	Rat o = ratfromi(1);
 	
 	Rat ma = maxMatrix(A, m, n);
-	Rat a = ratfromi(ceil(rattodouble(ma)));
+	Rat a = ratfromi((int)ceil(rattodouble(ma)));
 	a = (ratiseq(a, ma)) ? ratadd(a, o) : a;
 	
 	Rat mb = maxMatrix(B, m, n);
-	Rat b = ratfromi(ceil(rattodouble(ma)));
+	Rat b = ratfromi((int)ceil(rattodouble(ma)));
 	b = (ratiseq(b, mb)) ? ratadd(b, o) : b;
 	
 	complementMatrix(A, a, m, n);
