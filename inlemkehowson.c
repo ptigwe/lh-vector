@@ -186,9 +186,6 @@ Rat maxrow(Rat* rat, int n)
 	{
 		Mrow = ratgreat(Mrow,rat[i]) ? Mrow : rat[i];
 	}
-	char str[MAXSTR];
-	rattoa(Mrow, str);
-	printf("Mrow=%s\n", str);
 	return Mrow;
 }
 

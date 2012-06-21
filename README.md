@@ -5,12 +5,9 @@ The Lemke Howson algorithm simulated with the use of covering vectors.
 
 Changes:
 ============
-- Added an extra description for rational numbers using the GNUMP library
-  to provide a rational number with integer values for the numerator and
-  denominator of arbitrary length.
-- An extra make rule was added to compile the program for the GNUMP
-  library.
+- Added tests for the paths for the 6x6 cyclic polytope, with the missing
+  labels 1 _'path/path-input'_ and 12 _'path/path-input12'_
 
-_'make inlh'_ -- Compiles the program using the provided mp library
-
-_'make inglh'_ -- Compiles the program using the GMUMP library
+- Modified the _'path/gen-path'_ script, the generated path for each of the
+  labels is stored in _'path/lh-inputk'_, where k is either 1 or 12, and the
+  output from _'../inlh -i'_ is stored in _'path/lh-outputk'_

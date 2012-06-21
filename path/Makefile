@@ -8,4 +8,4 @@ path.o: path.c
 	$(CC) path.c -c $(CFLAGS) -o path.o 
 	
 clean:
-	rm -rf path.o path
+	rm -rf path.o path lh-*

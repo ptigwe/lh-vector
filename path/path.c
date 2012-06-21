@@ -111,6 +111,7 @@ int main(int argc, char** argv)
 	
 	basic = (int*)malloc(ndim * sizeof(int));
 	
+	/*Initialize the array of basic variables*/
 	int i;
 	for(i = 0; i < 2+m+n; i++)
 	{
@@ -120,6 +121,7 @@ int main(int argc, char** argv)
 	int var;
 	count = 0;
 	
+	/*read the labels in and store them in a linked list*/
 	root = malloc(sizeof(node));
 	struct node* next = root;
 	struct node* prev = root;
@@ -127,18 +129,40 @@ int main(int argc, char** argv)
 	{
 		next->value = var;
 		next->next = malloc(sizeof(node));
+		if(count == 1)
+		{
+			/*Let the second element be empty*/
+			prev = next;
+			next->next = malloc(sizeof(node));
+			next = next->next;
+			next->value = var;
+			next->next = malloc(sizeof(node));
+		}
+		prev = next;
+		next = next->next;
+		count++;
+	}
+	free(prev->next);
+	prev->next = NULL;
+	
+	/*Swap the last variable for the second*/
+	struct node* sec = root->next;
+	sec->value = prev->value;
+	
+	/*Delete the last element in the list*/
+	prev = root;
+	next = root;
+	while(next->next != NULL)
+	{
 		prev = next;
 		next = next->next;
 	}
 	free(prev->next);
 	prev->next = NULL;
 	
-	struct node* sec = root->next;
-	int tmp = sec->value;
-	sec->value = prev->value;
-	prev->value = tmp;
-	
+	/*Convert and print the new sequence*/
 	next = root;
+	count = 0;
 	while(next != NULL)
 	{
 		if(count == 0)
