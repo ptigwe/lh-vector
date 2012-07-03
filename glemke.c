@@ -888,6 +888,8 @@ void runlemke(Flagsrunlemke flags)
 	}
     while (1)       /* main loop of complementary pivoting                  */
 	{
+	if(flags.binteractcount)
+                flags.binteract = --flags.binteractcount ? 1 : 0;
 	testtablvars();
 	if (flags.bdocupivot)
 	    docupivot (leave, enter);

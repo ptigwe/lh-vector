@@ -39,6 +39,7 @@ typedef struct
     int   boutsol   ;   /* Y/N  output solution                         */
     int   binteract ;   /* Y/N  interactive pivoting                    */
     int   blexstats ;   /* Y/N  statistics on lexminratio tests         */
+    int   binteractcount;
     }
     Flagsrunlemke;
 

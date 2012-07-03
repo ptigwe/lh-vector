@@ -392,11 +392,14 @@ int main(int argc, char *argv[])
     flags.boutsol    = 1;
     flags.binteract  = 0;
     flags.blexstats  = 1;
+    flags.binteractcount = 0;
 
     /* parse options    */
-    while ( (c = getopt (argc, argv, "if:v")) != -1)
+    while ( (c = getopt (argc, argv, "if:vI:")) != -1)
         switch (c)
             {
+            case 'I':
+	      flags.binteractcount = atoi(optarg);
             case 'i':
                 flags.binteract  = 1;
                 printf("Interactive flag set.\n");
