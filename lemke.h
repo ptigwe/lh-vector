@@ -9,6 +9,12 @@
 #define INFOSTRINGLENGTH 8   /* string naming vars, e.g. "z0", "w187"   */
 #define LCPSTRL  60          /* length of string containing LCP entry   */
 
+extern int nrows;
+extern int ncols;
+extern int k;
+extern Rat** payoffA;
+extern Rat** payoffB;
+
 /* LCP input data                                               */
 extern  Rat **lcpM;             /* LCP Matrix                   */
 extern  Rat *rhsq;              /* right hand side  q           */
@@ -39,7 +45,8 @@ typedef struct
     int   boutsol   ;   /* Y/N  output solution                         */
     int   binteract ;   /* Y/N  interactive pivoting                    */
     int   blexstats ;   /* Y/N  statistics on lexminratio tests         */
-    int   binteractcount;
+    int   interactcount;/* Number of interactive entries                */
+	int   binitmethod;  /* Used to select the initialisation method     */
     }
     Flagsrunlemke;
 

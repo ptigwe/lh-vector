@@ -88,6 +88,10 @@ Rat ratneg (Rat a);
  */
 Rat ratreduce (Rat a);
 
+Rat maxrow(Rat* rat, int n);
+
+Rat maxMatrix(Rat** rat, int m, int n);
+
 /* converts rational  r  to string  s, omit den 1
  * s  must be sufficiently long to contain result
  * returns length of string

@@ -311,6 +311,31 @@ Rat ratreduce (Rat a)
     return a;
 }
 
+Rat maxrow(Rat* rat, int n)
+{
+	int i;
+	Rat Mrow = ratfromi(0);
+	for(i = 0; i < n; ++i)
+	{
+		Mrow = ratgreat(Mrow,rat[i]) ? Mrow : rat[i];
+	}
+	return Mrow;
+}
+
+Rat maxMatrix(Rat** rat, int m, int n)
+{
+	int i;
+	int tmpm = m;
+	int tmpn = n;
+	Rat M = ratfromi(0);
+	for(i = 0; i < tmpm; ++i)
+	{
+		Rat r = maxrow(rat[i], tmpn);
+		M = ratgreat(M, r) ? M : r;
+	}
+	return M;
+}
+
 int rattoa (Rat r, char *s)
 {
 	char str[MAXSTR];

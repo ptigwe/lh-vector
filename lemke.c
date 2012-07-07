@@ -28,6 +28,12 @@
         /*  v in VARS, v cobasic:  TABCOL(v) is v's tableau col */
         /*  v  basic:  TABCOL(v) < 0,  TABCOL(v)+n   is v's row */
 
+int nrows;
+int ncols;
+int k;
+Rat** payoffA;
+Rat** payoffB;
+
 /* LCP input    */
 Rat **lcpM;
 Rat *rhsq; 
@@ -818,6 +824,132 @@ void pivot (int leave, int enter)
     bascobas[leave] = col+n;        whichvar[col+n] = leave;
     bascobas[enter] = row;          whichvar[row]   = enter;
 }       /* end of  pivot (leave, enter)                         */
+
+int bestResponse(int l)
+{
+	int m = 0;
+	char str[MAXSTR];
+
+	if(l > nrows) /* if l is p2's strategy*/
+	{
+		l -= (nrows + 1);
+		int i;
+		for(i = 1; i < ncols; ++i)
+		{
+			if(ratgreat(payoffA[m][l], payoffA[i][l]))
+				m = i;
+		}
+		m += 1;
+	}
+	else /* if l is p1's strategy */
+	{
+		int i;
+		l -= 1;
+		for(i = 1; i < nrows; ++i)
+		{
+			if(ratgreat(payoffB[l][m], payoffB[l][i]))
+				m = i;
+		}
+		m += (nrows + 1);
+	}
+	return m;
+}
+
+int initLH1(Flagsrunlemke flags)
+{
+	int enter, leave;
+
+	enter = Z(0);
+	leave = (k > nrows) ? W(1) : W(2);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+
+    enter = complement(leave);
+	leave = W(bestResponse(k) + 2);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+
+	enter = complement(leave);
+	leave = (k > nrows) ? W(2) : W(1);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+
+	return leave;
+}
+
+int initLH2(Flagsrunlemke flags)
+{
+	int enter, leave;
+	
+	enter = Z(0);
+	leave = (k > nrows) ? W(2) : W(1);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+
+    enter = complement(leave);
+	leave = W(k + 2);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+
+	enter = complement(leave);
+	leave = (k > nrows) ? W(1) : W(2);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+	
+    enter = complement(leave);
+	leave = W(bestResponse(k) + 2);
+
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+
+	return leave;
+}
+
+int initLH(Flagsrunlemke flags)
+{
+	return flags.binitmethod ? initLH1(flags) : initLH2(flags);
+}
 
 /* ------------------------------------------------------------ */ 
 void runlemke(Flagsrunlemke flags)
@@ -839,11 +971,6 @@ void runlemke(Flagsrunlemke flags)
         outtabl();
         }
     
-    /* z0 enters the basis to obtain lex-feasible solution      */
-    enter = Z(0);                                                   
-    leave = flags.binteract ? interactivevar(enter, &z0leave) :
-            lexminvar(enter, &z0leave) ;
-    
     /* now give the entering q-col its correct sign             */
     negcol (RHS);   
     
@@ -852,10 +979,16 @@ void runlemke(Flagsrunlemke flags)
         printf("After negcol:\n");
         outtabl();
         }
+
+	/* z0 enters the basis to obtain lex-feasible solution      */
+    enter = flags.binteract ? Z(0) : complement(initLH(flags));                                                   
+    leave = flags.binteract ? interactivevar(enter, &z0leave) :
+	            lexminvar(enter, &z0leave) ;
+	
     while (1)       /* main loop of complementary pivoting                  */
         {
-	if(flags.binteractcount)
-		flags.binteract = --flags.binteractcount ? 1 : 0;
+	if(flags.interactcount)
+		flags.binteract = --flags.interactcount ? 1 : 0;
 	testtablvars();
         if (flags.bdocupivot)
             docupivot (leave, enter);

@@ -5,5 +5,8 @@ The Lemke Howson algorithm simulated with the use of covering vectors.
 
 Changes:
 ============
-- Added an extra option '-I:' to specify the number of interactive
-  steps to be done before the interactive flag is turned off.
+- Added two methods for initializing the first set of pivots for the
+  Lemke-Howson algorithm.
+- By default the first method for initialization is used, an extra
+  flag was added '-m' to specify that the second method should be
+  used. 

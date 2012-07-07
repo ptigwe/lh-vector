@@ -24,7 +24,7 @@
 
 static int n; 	/* LCP dimension here */
 
-int m, n1, k;
+int m, n1;
 
 FILE* lcpout;
 
@@ -124,18 +124,16 @@ void readnrats (Rat *v, const char *info)
         } 
 }   /* end of readnrats  */
 
-Rat ** A;
-Rat ** B;
 void setmatrices(int m, int n)
 {
-	T2ALLOC(A, m, n, Rat);
-	T2ALLOC(B, m, n, Rat);
+	T2ALLOC(payoffA, m, n, Rat);
+	T2ALLOC(payoffB, m, n, Rat);
 }
 
 void freematrices(int m)
 {
-	FREE2(A, m);
-	FREE2(B, m);
+	FREE2(payoffA, m);
+	FREE2(payoffB, m);
 }
 
 void readMatrices()
@@ -150,7 +148,7 @@ void readMatrices()
 	{
 		sprintf(info, "A[%d]", i+1);
 		n = n1;
-		readnrats(A[i], info);
+		readnrats(payoffA[i], info);
 	}
 	
 	readconf("B=");
@@ -159,7 +157,7 @@ void readMatrices()
 	{
 		sprintf(info, "B[%d]", i+1);
 		n = n1;
-		readnrats(B[i], info);
+		readnrats(payoffB[i], info);
 	}
 }
 
@@ -177,31 +175,6 @@ void readGame (void)
     setmatrices(m, n1);
     readMatrices();
 }       /* end of reading in LCP data   */
-
-Rat maxrow(Rat* rat, int n)
-{
-	int i;
-	Rat Mrow = ratfromi(0);
-	for(i = 0; i < n; ++i)
-	{
-		Mrow = ratgreat(Mrow,rat[i]) ? Mrow : rat[i];
-	}
-	return Mrow;
-}
-
-Rat maxMatrix(Rat** rat, int m, int n)
-{
-	int i;
-	int tmpm = m;
-	int tmpn = n;
-	Rat M = ratfromi(0);
-	for(i = 0; i < tmpm; ++i)
-	{
-		Rat r = maxrow(rat[i], tmpn);
-		M = ratgreat(M, r) ? M : r;
-	}
-	return M;
-}
 
 void complementMatrix(Rat** mat, Rat rat, int m, int n)
 {
@@ -254,7 +227,7 @@ void convertlcpM()
 			}
 			else if (j > m+1)
 			{
-				lcpM[i+2][j] = A[i][j - (m+2)];
+				lcpM[i+2][j] = payoffA[i][j - (m+2)];
 			}
 			else
 			{
@@ -274,7 +247,7 @@ void convertlcpM()
 			}
 			else if (j > 1 && j < 2+m)
 			{
-				lcpM[i+2+m][j] = B[j - 2][i];
+				lcpM[i+2+m][j] = payoffB[j - 2][i];
 			}
 			else
 			{
@@ -363,20 +336,21 @@ void convert()
 {	
 	Rat o = ratfromi(1);
 	
-	Rat ma = maxMatrix(A, m, n);
+	Rat ma = maxMatrix(payoffA, m, n);
 	Rat a = ratfromi((int)ceil(rattodouble(ma)));
 	a = (ratiseq(a, ma)) ? ratadd(a, o) : a;
 	
-	Rat mb = maxMatrix(B, m, n);
+	Rat mb = maxMatrix(payoffB, m, n);
 	Rat b = ratfromi((int)ceil(rattodouble(ma)));
 	b = (ratiseq(b, mb)) ? ratadd(b, o) : b;
 	
-	complementMatrix(A, a, m, n);
-	complementMatrix(B, b, m, n);
+	complementMatrix(payoffA, a, m, n);
+	complementMatrix(payoffB, b, m, n);
+	nrows = m;
+	ncols = n1;
 	convertlcpM();
 	convertq();
 	convertd();
-	freematrices(m);
 }
 
 /* ---------------------- main ------------------------ */       
@@ -392,14 +366,15 @@ int main(int argc, char *argv[])
     flags.boutsol    = 1;
     flags.binteract  = 0;
     flags.blexstats  = 1;
-    flags.binteractcount = 0;
+    flags.interactcount = 0;
+	flags.binitmethod = 1;
 
     /* parse options    */
-    while ( (c = getopt (argc, argv, "if:vI:")) != -1)
+    while ( (c = getopt (argc, argv, "if:vI:m")) != -1)
         switch (c)
             {
             case 'I':
-	      flags.binteractcount = atoi(optarg);
+	      flags.interactcount = atoi(optarg);
             case 'i':
                 flags.binteract  = 1;
                 printf("Interactive flag set.\n");
@@ -411,6 +386,9 @@ int main(int argc, char *argv[])
                 flags.bouttabl   = 1;
                 printf("Verbose tableau output.\n");
                 break;
+			case 'm':
+				flags.binitmethod = 0;
+				break;
             case '?':
                 if (isprint (optopt))
                     fprintf (stderr, "Unknown option `-%c'.\n", optopt);
@@ -431,5 +409,6 @@ int main(int argc, char *argv[])
 		printLCP();
 	}
     runlemke(flags); 
+	freematrices(m);
     return 0;
 }
