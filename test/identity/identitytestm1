@@ -1,0 +1,25 @@
+#!/bin/sh
+#Test identity matrices using the first method for converting to an equivalent path
+N=$1
+./genidentity $N > input
+for k in $(eval echo {1..$((2*N))})
+do
+	echo "Testing label $k \c"
+	./genidenpath $N $k > tmp
+	../../path/path < tmp > gpath
+	sed "s/k=.*/k=$k/" input > tmp
+	mv tmp input
+	../../inlh < input > cpath
+	grep -x 'leaving:.*' cpath > tmp
+	mv tmp cpath
+	sed 's/leaving: \([a-z0-9]*\).*/\1/' cpath > tmp
+	mv tmp cpath
+	S=`diff cpath gpath`
+	if [ -z $S ] 
+	then
+		echo "Success"
+	else
+		echo "Failed"
+	fi
+done
+rm input cpath gpath

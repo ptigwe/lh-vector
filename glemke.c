@@ -868,7 +868,7 @@ int bestResponse(int l)
 	{
 		l -= (nrows + 1);
 		int i;
-		for(i = 1; i < ncols; ++i)
+		for(i = 1; i < nrows; ++i)
 		{
 			if(ratgreat(payoffA[m][l], payoffA[i][l]))
 				m = i;
@@ -879,7 +879,7 @@ int bestResponse(int l)
 	{
 		int i;
 		l -= 1;
-		for(i = 1; i < nrows; ++i)
+		for(i = 1; i < ncols; ++i)
 		{
 			if(ratgreat(payoffB[l][m], payoffB[l][i]))
 				m = i;

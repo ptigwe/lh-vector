@@ -1,0 +1,17 @@
+#!/bin/sh
+echo "\n" > sample-output
+M=$1
+N=$((2*$M))
+F=$M"x"$N
+for k in $(eval echo {1..$(($N+$M))})
+do
+	echo "Testing label $k: \c"
+	sed "s/k=.*/k=$k/" $F > tmp
+	mv tmp $F
+	../../../inlh $2 < $F > tmp
+	cat sample-output tmp > tmp2
+	mv tmp2 sample-output
+	S=`egrep 'Number of pivots:' tmp`
+	echo " "$S
+done
+rm -f tmp

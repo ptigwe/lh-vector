@@ -336,16 +336,17 @@ void convert()
 {	
 	Rat o = ratfromi(1);
 	
-	Rat ma = maxMatrix(payoffA, m, n);
+	Rat ma = maxMatrix(payoffA, m, n1);
 	Rat a = ratfromi((int)ceil(rattodouble(ma)));
 	a = (ratiseq(a, ma)) ? ratadd(a, o) : a;
 	
-	Rat mb = maxMatrix(payoffB, m, n);
-	Rat b = ratfromi((int)ceil(rattodouble(ma)));
+	o = ratfromi(1);
+	Rat mb = maxMatrix(payoffB, m, n1);
+	Rat b = ratfromi((int)ceil(rattodouble(mb)));
 	b = (ratiseq(b, mb)) ? ratadd(b, o) : b;
 	
-	complementMatrix(payoffA, a, m, n);
-	complementMatrix(payoffB, b, m, n);
+	complementMatrix(payoffA, a, m, n1);
+	complementMatrix(payoffB, b, m, n1);
 	nrows = m;
 	ncols = n1;
 	convertlcpM();

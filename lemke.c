@@ -829,12 +829,11 @@ int bestResponse(int l)
 {
 	int m = 0;
 	char str[MAXSTR];
-
 	if(l > nrows) /* if l is p2's strategy*/
 	{
 		l -= (nrows + 1);
 		int i;
-		for(i = 1; i < ncols; ++i)
+		for(i = 1; i < nrows; ++i)
 		{
 			if(ratgreat(payoffA[m][l], payoffA[i][l]))
 				m = i;
@@ -845,13 +844,14 @@ int bestResponse(int l)
 	{
 		int i;
 		l -= 1;
-		for(i = 1; i < nrows; ++i)
+		for(i = 1; i < ncols; ++i)
 		{
 			if(ratgreat(payoffB[l][m], payoffB[l][i]))
 				m = i;
 		}
 		m += (nrows + 1);
 	}
+	printf("%d\n", m);
 	return m;
 }
 

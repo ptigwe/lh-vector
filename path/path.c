@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <getopt.h>
 
 #define Z(i) (i)
 #define W(i) (i + ndim)
@@ -51,11 +52,11 @@ void printVariable(int var)
 {
 	if(var <= ndim)
 	{
-		printf("z%d ", var);
+		printf("z%d", var);
 	}
 	else
 	{
-		printf("w%d ", var-ndim);
+		printf("w%d", var-ndim);
 	}
 }
 
@@ -102,6 +103,17 @@ void init(int var)
 
 int main(int argc, char** argv)
 {
+	int swap = 1;
+	char c;
+	while((c = getopt(argc, argv, "m")) != -1)
+	{
+		switch (c)
+		{
+			case 'm':
+				swap = 0;
+				break;
+		}
+	}
 	readconf("m=");
 	scanf("%d", &m);
 	readconf("n=");
@@ -121,6 +133,9 @@ int main(int argc, char** argv)
 	int var;
 	count = 0;
 	
+	/*Swap the last variable for the second*/
+	struct node* sec;
+	
 	/*read the labels in and store them in a linked list*/
 	root = malloc(sizeof(node));
 	struct node* next = root;
@@ -129,10 +144,11 @@ int main(int argc, char** argv)
 	{
 		next->value = var;
 		next->next = malloc(sizeof(node));
-		if(count == 1)
+		if(count == swap)
 		{
 			/*Let the second element be empty*/
 			prev = next;
+			sec = next;
 			next->next = malloc(sizeof(node));
 			next = next->next;
 			next->value = var;
@@ -145,8 +161,6 @@ int main(int argc, char** argv)
 	free(prev->next);
 	prev->next = NULL;
 	
-	/*Swap the last variable for the second*/
-	struct node* sec = root->next;
 	sec->value = prev->value;
 	
 	/*Delete the last element in the list*/
