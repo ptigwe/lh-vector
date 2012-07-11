@@ -825,6 +825,9 @@ void pivot (int leave, int enter)
     bascobas[enter] = row;          whichvar[row]   = enter;
 }       /* end of  pivot (leave, enter)                         */
 
+/* Returns the best response of strategy l where
+ * 1 <= l <= m+n
+ */
 int bestResponse(int l)
 {
 	int m = 0;
@@ -851,10 +854,27 @@ int bestResponse(int l)
 		}
 		m += (nrows + 1);
 	}
-	printf("%d\n", m);
 	return m;
 }
 
+/* Pivots the tableau given the values for the leaving
+ * and entering variables, and outputs data based on the
+ * flags.
+ */
+void fpivot(int leave, int enter, Flagsrunlemke flags)
+{
+	testtablvars();
+    if (flags.bdocupivot)
+        docupivot (leave, enter);
+    pivot (leave, enter);
+    if (flags.bouttabl)
+        outtabl();
+	pivotcount++;
+}
+
+/* Initialise the LH algorithm with the first
+ * three pivots of method 1 as explained in the report.
+ */
 int initLH1(Flagsrunlemke flags)
 {
 	int enter, leave;
@@ -862,39 +882,24 @@ int initLH1(Flagsrunlemke flags)
 	enter = Z(0);
 	leave = (k > nrows) ? W(1) : W(2);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 
     enter = complement(leave);
 	leave = W(bestResponse(k) + 2);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 
 	enter = complement(leave);
 	leave = (k > nrows) ? W(2) : W(1);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 
 	return leave;
 }
 
+/* Initialise the LH algorithm with the first
+ * three pivots of method 1 as explained in the report.
+ */
 int initLH2(Flagsrunlemke flags)
 {
 	int enter, leave;
@@ -902,50 +907,27 @@ int initLH2(Flagsrunlemke flags)
 	enter = Z(0);
 	leave = (k > nrows) ? W(2) : W(1);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 
     enter = complement(leave);
 	leave = W(k + 2);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 
 	enter = complement(leave);
 	leave = (k > nrows) ? W(1) : W(2);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 	
     enter = complement(leave);
 	leave = W(bestResponse(k) + 2);
 
-	testtablvars();
-    if (flags.bdocupivot)
-        docupivot (leave, enter);
-    pivot (leave, enter);
-    if (flags.bouttabl)
-        outtabl();
-	pivotcount++;
+	fpivot(leave, enter, flags);
 
 	return leave;
 }
 
+/* Initialise the LH pivots given the flags */
 int initLH(Flagsrunlemke flags)
 {
 	return flags.binitmethod ? initLH1(flags) : initLH2(flags);

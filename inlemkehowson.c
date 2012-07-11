@@ -26,7 +26,7 @@ static int n; 	/* LCP dimension here */
 
 int m, n1;
 
-FILE* lcpout;
+FILE* lcpout; /* File to store the equivalent LCP */
 
 /* max no of characters + 1 (for terminating '\0') 
  * of a string  s  declared as  char s[MAXSTR] 
@@ -124,18 +124,21 @@ void readnrats (Rat *v, const char *info)
         } 
 }   /* end of readnrats  */
 
+/* Allocate memory for the matrices */
 void setmatrices(int m, int n)
 {
 	T2ALLOC(payoffA, m, n, Rat);
 	T2ALLOC(payoffB, m, n, Rat);
 }
 
+/* Free the memory for the matrices */
 void freematrices(int m)
 {
 	FREE2(payoffA, m);
 	FREE2(payoffB, m);
 }
 
+/* Read matrices A and B */
 void readMatrices()
 {
 	/* read in  M   */
@@ -161,6 +164,7 @@ void readMatrices()
 	}
 }
 
+/* Read the game input */
 void readGame (void)
         /* reads LCP data  n, M, q, d  from stdin       */
 {
@@ -176,6 +180,7 @@ void readGame (void)
     readMatrices();
 }       /* end of reading in LCP data   */
 
+/* Calculate the complement (-mat) of the matrix given the maximum */
 void complementMatrix(Rat** mat, Rat rat, int m, int n)
 {
 	int i;
@@ -190,6 +195,7 @@ void complementMatrix(Rat** mat, Rat rat, int m, int n)
 	}
 }
 
+/* Convert the matrices to the LCP matrix M */
 void convertlcpM()
 {	
 	n = m+n1+2;
@@ -257,6 +263,7 @@ void convertlcpM()
 	}
 }
 
+/* Computes the LCP q vector (i.e. RHS) */
 void convertq()
 {
 	rhsq[0] = rhsq[1] = ratfromi(-1);
@@ -267,6 +274,7 @@ void convertq()
 	}
 }
 
+/* Compute the value of LCP d-vector */
 void convertd()
 {
 	int i;
@@ -283,6 +291,7 @@ void convertd()
 	}
 }
 
+/* Prints the lcpM to the output file */
 void printlcpM()
 {
 	fprintf(lcpout, "n= %d\nM=\n", n);
@@ -300,6 +309,7 @@ void printlcpM()
 	}
 }
 
+/* Prints the RHS to the output file */
 void printlcpq()
 {
 	fprintf(lcpout, "q= ");
@@ -312,6 +322,7 @@ void printlcpq()
 	}
 }
 
+/* Prints the vecd to the output file */
 void printlcpd()
 {
 	fprintf(lcpout, "\nd= ");
@@ -324,6 +335,7 @@ void printlcpd()
 	}
 }
 
+/* Prints the LCP to the output file */
 void printLCP()
 {
 	printlcpM();
@@ -332,8 +344,11 @@ void printLCP()
 	fclose(lcpout);
 }
 
+/* Converts the game to an equivalent LCP */
 void convert()
 {	
+	/* Find the value of -A and -B using the method
+	 * described in the report */
 	Rat o = ratfromi(1);
 	
 	Rat ma = maxMatrix(payoffA, m, n1);

@@ -12,6 +12,7 @@
 	/* sprintf	*/
 #include "rat.h"
 
+/* Initialise a rational number and returns it */
 Rat ratinit()
 {
 	Rat rat;
@@ -20,6 +21,7 @@ Rat ratinit()
 	return rat;
 }
 
+/* Creates a clone of the given rational number */
 Rat ratclone(Rat rat)
 {
 	Rat r = ratinit();
@@ -28,12 +30,14 @@ Rat ratclone(Rat rat)
 	return r;
 }
 
+/* Frees the memory occupied by a rational number */
 void ratclear(Rat rat)
 {
 	gclear(rat.num);
 	gclear(rat.den);
 }
 
+/* Creates a rational number from two integers */
 Rat itorat(int num, int den)
 {
 	Rat r = ratinit();
@@ -43,6 +47,8 @@ Rat itorat(int num, int den)
 	return r;
 }
 
+/* Parses a string of characters of the format "num" or "num/den" 
+ * and converts it to a rational number */
 Rat parseRat(char* srat, const char* info, int j)
 {
 	char snum[MAXSTR], sden[MAXSTR];
@@ -67,6 +73,7 @@ Rat parseRat(char* srat, const char* info, int j)
 	return r;
 }
 
+/* Parses a string of characters of the format "i.d" to the a rational number */
 Rat parseDecimal(char* srat, const char* info, int j)
 {
 	double x;
@@ -91,6 +98,8 @@ Rat parseDecimal(char* srat, const char* info, int j)
 	return rat;
 }
 
+/* Parses a string that of the format "x", "x/y" and "x.y"
+ * and returns the equivalent rational numbers */
 Rat ratfroma(char* srat, const char* info, int j)
 {
 	char* pos;
@@ -156,11 +165,13 @@ Rat ratadd (Rat a, Rat b)
     return c ; 
 }
 
+/* Returns the value of "a/b" */
 Rat ratdiv (Rat a, Rat b)
 {
     return ratmult(a, ratinv(b) );
 }
 
+/* Returns the equivalent rational number of an integer */
 Rat ratfromi(int i)
 {
     Rat tmp = ratinit();
@@ -187,6 +198,7 @@ int ratgcd(int a, int b)
     return a;
 }*/
 
+/* Computes the gcd of a and b and stores it in c */
 void ratgcd(gmpt a, gmpt b, gmpt c)
 {
 	gmpt d, e;
@@ -201,6 +213,7 @@ void ratgcd(gmpt a, gmpt b, gmpt c)
 	gclear(e);
 }
 
+/* Inverts a rational number */
 Rat ratinv (Rat a)
 {
 	Rat a1 = ratclone(a);
@@ -212,6 +225,10 @@ Rat ratinv (Rat a)
 	
     return a1;
 }
+
+/* returns Boolean condition that a==b
+ * a, b are assumed to be normalized
+ */
 Bool ratiseq (Rat a, Rat b)
 {
 	/*return (a.num == b.num && a.den == b.den);*/
@@ -227,6 +244,7 @@ Bool ratiseq (Rat a, Rat b)
     return i;
 }
 
+/* returns Boolean condition that a > b                 */
 Bool ratgreat (Rat a, Rat b)
 {
 	Rat a1 = ratclone(a);
@@ -241,6 +259,7 @@ Bool ratgreat (Rat a, Rat b)
     return i;
 }
 
+/* returns product  a*b, normalized                     */
 Rat ratmult (Rat a, Rat b)
 {
 	Rat a1 = ratclone(a);
@@ -269,6 +288,7 @@ Rat ratmult (Rat a, Rat b)
     return ratreduce(a1);        /* a  or  b  might be non-normalized    s*/
 }
 
+/* returns -a, normalized only if a normalized          */
 Rat ratneg (Rat a)
         /* returns -a                                           */
 {
@@ -277,6 +297,9 @@ Rat ratneg (Rat a)
     return  a;
 }
 
+/* normalizes (make den>0, =1 if num==0)
+ * and reduces by  gcd(num,den)
+ */
 Rat ratreduce (Rat a)
 {
     if (gzero(a.num))
@@ -311,6 +334,7 @@ Rat ratreduce (Rat a)
     return a;
 }
 
+/* Returns the maximum element in an array of n Rat elements */
 Rat maxrow(Rat* rat, int n)
 {
 	int i;
@@ -322,6 +346,7 @@ Rat maxrow(Rat* rat, int n)
 	return Mrow;
 }
 
+/* Returns the maximum element in an mxn matrix of Rat elements */
 Rat maxMatrix(Rat** rat, int m, int n)
 {
 	int i;
@@ -336,6 +361,10 @@ Rat maxMatrix(Rat** rat, int m, int n)
 	return M;
 }
 
+/* converts rational  r  to string  s, omit den 1
+ * s  must be sufficiently long to contain result
+ * returns length of string
+ */
 int rattoa (Rat r, char *s)
 {
 	char str[MAXSTR];
@@ -354,6 +383,7 @@ int rattoa (Rat r, char *s)
     return l;
 }
 
+/* converts rational  a  to  double                     */
 double rattodouble(Rat a)
 {
 	int num, den;

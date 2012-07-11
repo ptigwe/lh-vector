@@ -37,14 +37,19 @@ Rat;
 
 #ifdef GLEMKE
 
+/* Initialise a rational number and returns it */
 Rat ratinit();
 
+/* Frees the memory occupied by a rational number */
 void ratclear(Rat rat);
 
 #endif
 
+/* Creates a rational number from two integers */
 Rat itorat(int num, int den);
 
+/* Parses a string that of the format "x", "x/y" and "x.y"
+ * and returns the equivalent rational numbers */
 Rat ratfroma(char* str, const char* info, int j);
 
 Rat atorat(char* str);
@@ -88,8 +93,10 @@ Rat ratneg (Rat a);
  */
 Rat ratreduce (Rat a);
 
+/* Returns the maximum element in an array of n Rat elements */
 Rat maxrow(Rat* rat, int n);
 
+/* Returns the maximum element in an mxn matrix of Rat elements */
 Rat maxMatrix(Rat** rat, int m, int n);
 
 /* converts rational  r  to string  s, omit den 1

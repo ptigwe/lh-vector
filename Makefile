@@ -58,10 +58,20 @@ inlemke: $(INLEMKE)
 inglemke: $(INGLEMKE)
 	$(CC) -D GLEMKE $(CFLAGS) $(INGLEMKE) $(GMP) -o inlemke 
 
+subdir:
+	cd path; $(MAKE)
+	cd test/identity/; $(MAKE)
+	cd test/dualcyclic/dxd/; $(MAKE)
+
 depend:: 
 	gcc -MM $(ALLOBJ:.o=.c) > $(DEPFILE)
 
-.PHONY : clean 
+.PHONY : clean cleansubdir
+
+cleansubdir:
+	cd path; $(MAKE) clean
+	cd test/identity/; $(MAKE) clean
+	cd test/dualcyclic/dxd/; $(MAKE) clean
 
 clean:
 	-rm -f *.o core *.exe $(DEPFILE); touch $(DEPFILE); make depend
