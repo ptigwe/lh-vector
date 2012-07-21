@@ -831,7 +831,6 @@ void pivot (int leave, int enter)
 int bestResponse(int l)
 {
 	int m = 0;
-	char str[MAXSTR];
 	if(l > nrows) /* if l is p2's strategy*/
 	{
 		l -= (nrows + 1);
@@ -932,6 +931,68 @@ int initLH(Flagsrunlemke flags)
 {
 	return flags.binitmethod ? initLH1(flags) : initLH2(flags);
 }
+
+void getinvAB()
+{
+    int i;
+    mp** invAB;
+    T2ALLOC(invAB, n, n, mp);
+
+    for(i = 0; i < n; ++i)
+    {
+        if(bascobas[W(i + 1)] < n) /* If W(i) is basic */
+        {
+            int j = bascobas[W(i + 1)];
+            int k;
+            for(k = 0; k < n; ++k)
+            {
+                if(k == j)
+                {
+                    itomp(1, invAB[k][i]);
+                }
+                else
+                {
+                    itomp(0, invAB[k][i]);
+                }
+            }
+        }
+        else /* If W(i) is non-basic */
+        {
+            int j = TABCOL(W(i + 1));
+            int k;
+            for(k = 0; k < n; ++k)
+            {
+                copy(invAB[k][i], A[k][j]);
+            }
+        }
+    }
+
+    colset(n);
+    printf("\nz0= ");
+    for(i = 0; i < n; ++i)
+    {
+	char str[MAXSTR];
+	mptoa(A[i][TABCOL(Z(0))], str);
+	printf("%s ", str);
+    }
+    colout();
+
+    printf("\nPrinting invAB:\n");
+    colset(n);
+
+    for(i = 0; i < n; ++i)
+    {
+        int j;
+        for(j = 0; j < n; ++j)
+        {
+            char str[MAXSTR];
+            mptoa(invAB[i][j], str);
+            colpr(str);
+        }
+    }
+    colout();
+    FREE2(invAB, n);
+}
 
 /* ------------------------------------------------------------ */ 
 void runlemke(Flagsrunlemke flags)
@@ -999,6 +1060,9 @@ void runlemke(Flagsrunlemke flags)
         outsol();
     if (flags.blexstats)
         outstatistics();
+
+    if(flags.boutinvAB)
+        getinvAB();
     
     notokcopysol();
 }

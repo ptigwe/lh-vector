@@ -47,6 +47,7 @@ typedef struct
     int   blexstats ;   /* Y/N  statistics on lexminratio tests         */
     int   interactcount;/* Number of interactive entries                */
 	int   binitmethod;  /* Used to select the initialisation method     */
+    int   boutinvAB;
     }
     Flagsrunlemke;
 

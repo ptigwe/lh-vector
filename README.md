@@ -5,14 +5,13 @@ The Lemke Howson algorithm simulated with the use of covering vectors.
 
 Changes:
 ============
-- Added comments to the .c and .h files.
-
-Compiling:
-============
-- The program can be compiled using two make rules _'make inglh'_ which
-  makes use of the GNUMP library, and _'make inlh'_ which makes use of a
-  predefined multiple precision library _'mp.h'_ .
-- The programs for needed for testing can be compiled using _'make subdir'_.
-- The _'labelstest'_ script runs the program for all possible values of the
-  missing label given the maximum value of k and uses the game stored in 
-  _'sample-input'_
+- Modified _'labelstest'_ to automatically compute the total number of labels
+  to test.
+- Added functionality to compute A<sub>B</sub><sup>-1</sup>.
+- Added an extra flag '-a' which outputs the value of the covering vector
+  and A<sub>B</sub><sup>-1</sup>.
+- Added test files which tests the computation of A<sub>B</sub><sup>-1</sup>
+  with the initial covering vector to calculate the value of the z0 column
+  in the final tableau. The test file _'test/invAB/invABtest'_ checks that
+  for all values of the missing label, the computed value for 
+  A<sub>B</sub><sup>-1</sup> is correct.

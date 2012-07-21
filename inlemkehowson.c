@@ -386,11 +386,14 @@ int main(int argc, char *argv[])
 	flags.binitmethod = 1;
 
     /* parse options    */
-    while ( (c = getopt (argc, argv, "if:vI:m")) != -1)
+    while ( (c = getopt (argc, argv, "if:vI:ma")) != -1)
         switch (c)
             {
+	    case 'a':
+	        flags.boutinvAB = 1;
+		break;
             case 'I':
-	      flags.interactcount = atoi(optarg);
+	        flags.interactcount = atoi(optarg);
             case 'i':
                 flags.binteract  = 1;
                 printf("Interactive flag set.\n");
