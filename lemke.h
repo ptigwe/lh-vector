@@ -12,6 +12,7 @@
 extern int nrows;
 extern int ncols;
 extern int k;
+extern int k2;
 extern Rat** payoffA;
 extern Rat** payoffB;
 

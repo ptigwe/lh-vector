@@ -37,6 +37,7 @@ long record_digits;	/* not in the gmp package	*/
 int nrows;     /* The number of rows in the payoff matrix */
 int ncols;     /* The number of columns in the payoff matrix */
 int k;         /* The missing label */
+int k2;
 Rat** payoffA; /* The payoff matrix A */
 Rat** payoffB; /* The payoff matrix B */
 
@@ -980,10 +981,10 @@ int initLH(Flagsrunlemke flags)
 	return flags.binitmethod ? initLH1(flags) : initLH2(flags);
 }
 
-void getinvAB()
+gmpt** invAB; /* Represents the inverse of AB */
+void getinvAB(int verbose)
 {
     int i;
-    gmpt** invAB;
     T2ALLOC(invAB, n, n, gmpt);
     G2INIT(invAB, n, n);
 
@@ -995,7 +996,7 @@ void getinvAB()
             int k;
             for(k = 0; k < n; ++k)
             {
-                if(k == j)
+                if(k == j) /* The jth row of the ith column is 1 other rows are 0 */
                 {
                     gitomp(1, invAB[k][i]);
                 }
@@ -1009,7 +1010,7 @@ void getinvAB()
         {
             int j = TABCOL(W(i + 1));
             int k;
-            for(k = 0; k < n; ++k)
+            for(k = 0; k < n; ++k) /* copy the column representing W(i) into the ith column */
             {
 		gset(invAB[k][i], A[k][j]);
                 /*copy(invAB[k][i], A[k][j]);*/
@@ -1017,32 +1018,122 @@ void getinvAB()
         }
     }
 
-    colset(n);
-    printf("\nz0= ");
+    if(verbose)
+    {
+	colset(n);
+	printf("\nz0= ");
+	for(i = 0; i < n; ++i)
+	{
+	    char str[MAXSTR];
+	    gmptoa(A[i][TABCOL(Z(0))], str);
+	    printf("%s ", str);
+	}
+	colout();
+
+	printf("\nPrinting invAB:\n");
+	colset(n);
+
+	for(i = 0; i < n; ++i)
+	{
+	    int j;
+	    for(j = 0; j < n; ++j)
+	    {
+		char str[MAXSTR];
+	        gmptoa(invAB[i][j], str);
+		colpr(str);
+	    }
+	}
+	colout();
+    }
+}
+
+/* Restart from the current equilibrium using k2 as the missing label */
+void restart(Flagsrunlemke flags)
+{
+    /* vecd2 represents the covering vector when k2 is the missing label */
+    gmpt* vecd2 = TALLOC(n, gmpt);
+    GINIT(vecd2, n);
+    int i;
     for(i = 0; i < n; ++i)
     {
-        char str[MAXSTR];
-        gmptoa(A[i][TABCOL(Z(0))], str);
-        printf("%s ", str);
+        if(i == (k2 + 1))
+        {
+            gitomp(0, vecd2[i]);
+        }
+        else
+        {
+            gitomp(1, vecd2[i]);
+        }
     }
-    colout();
 
-    printf("\nPrinting invAB:\n");
-    colset(n);
-
+    /* sol represents the computed covering vector by multiplying
+    * invAB with vecd2, and multiplying the result by -1 */
+    gmpt* sol = TALLOC(n, gmpt);
+    GINIT(sol, n);
     for(i = 0; i < n; ++i)
     {
         int j;
+        gmpt sum;
+	ginit(sum);
+        gitomp(0, sum);
         for(j = 0; j < n; ++j)
         {
-            char str[MAXSTR];
-            gmptoa(invAB[i][j], str);
-            colpr(str);
+            gmpt tmp;
+	    ginit(tmp);
+            gmulint(invAB[i][j], vecd2[j], tmp);
+            gadd(sum, tmp, sum);
+            /*sum = ratadd(sum, tmp);*/
         }
+        gchangesign(sum);
+        gset(sol[i], sum);
     }
-    colout();
-    FREE2(invAB, n);
+    /* Copy the new covering vector into the tableau */
+    for(i = 0; i < n; ++i)
+    {
+       /*A[i][TABCOL(Z(0))] = sol[i];*/
+       gset(A[i][TABCOL(Z(0))], sol[i]);
+    }
+    printf("\nTableau with new covering vector\n");
+    outtabl();
+    printf("\nRestarting with missing label: %d\n", k2);
+
+    /* Pivot as usual except without using initLH */
+    int leave, enter, z0leave;
+    pivotcount = 1;
+
+    enter = Z(0);
+    leave = flags.binteract ? interactivevar(enter, &z0leave) :
+                    lexminvar(enter, &z0leave) ;
+
+    while (1)       /* main loop of complementary pivoting                  */
+        {
+        if(flags.interactcount)
+                flags.binteract = --flags.interactcount ? 1 : 0;
+        testtablvars();
+        if (flags.bdocupivot)
+            docupivot (leave, enter);
+        pivot (leave, enter);
+        if (z0leave)
+            break;  /* z0 will have value 0 but may still be basic. Amend?  */
+        if (flags.bouttabl)
+            outtabl();
+        enter = complement(leave);
+        leave = flags.binteract ? interactivevar(enter, &z0leave) :
+                lexminvar(enter, &z0leave) ;
+        if (pivotcount++ == flags.maxcount)
+            {
+            printf("------- stop after %d pivoting steps --------\n",
+                   flags.maxcount);
+            break;
+            }
+        }
+
+        if (flags.boutsol)
+        outsol();
+    if (flags.blexstats)
+        outstatistics();
 }
+
 /* ------------------------------------------------------------ */ 
 void runlemke(Flagsrunlemke flags)
 {
@@ -1110,9 +1201,11 @@ void runlemke(Flagsrunlemke flags)
     if (flags.blexstats)
         outstatistics();
 
-    if(flags.boutinvAB)
+    getinvAB(flags.boutinvAB);
+
+    if(k2 > 0 && k2 < (n - 1))
     {
-	getinvAB();
+	restart(flags);
     }
     
     notokcopysol();

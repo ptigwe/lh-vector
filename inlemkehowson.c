@@ -173,8 +173,8 @@ void readGame (void)
     scanf("%d", &m);
     readconf("n=");
     scanf("%d", &n1);
-	readconf("k=");
-	scanf("%d", &k);
+    readconf("k=");
+    scanf("%d", &k);
     
     setmatrices(m, n1);
     readMatrices();
@@ -373,6 +373,7 @@ void convert()
 int main(int argc, char *argv[])
 {
     int c;
+    k2 = 0;
     Flagsrunlemke flags;
 
     flags.maxcount   = 0;
@@ -384,13 +385,16 @@ int main(int argc, char *argv[])
     flags.blexstats  = 1;
     flags.interactcount = 0;
 	flags.binitmethod = 1;
-
+    flags.boutinvAB = 0;
     /* parse options    */
-    while ( (c = getopt (argc, argv, "if:vI:ma")) != -1)
+    while ( (c = getopt (argc, argv, "if:vI:mae:")) != -1)
         switch (c)
             {
 	    case 'a':
 	        flags.boutinvAB = 1;
+		break;
+	    case 'e':
+		k2 = atoi(optarg);
 		break;
             case 'I':
 	        flags.interactcount = atoi(optarg);
