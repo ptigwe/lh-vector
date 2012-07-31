@@ -4,6 +4,8 @@
  */
 
 /* #include before:  rat.h       */
+#ifndef LEMKE_H
+#define LEMKE_H
 
 #define MAXLCPDIM 2000       /* max LCP dimension                       */
 #define INFOSTRINGLENGTH 8   /* string naming vars, e.g. "z0", "w187"   */
@@ -26,6 +28,8 @@ extern  int lcpdim;             /* LCP dimension                */
 extern  Rat  *solz;             /* LCP solution  z  vector      */
 /* no. of Lemke pivot iterations, including the first to pivot z0 in    */
 extern  int  pivotcount;
+
+int vartoa(int v, char s[]);
 
 /* allocate and initialize with zero entries an LCP of dimension  n
  * this is the only method changing  lcpdim  
@@ -57,3 +61,8 @@ typedef struct
  * exit with error if ray termination
  */
 void runlemke(Flagsrunlemke flags);
+
+/* Compute all equilibria */
+void computeEquilibria(Flagsrunlemke flags);
+
+#endif

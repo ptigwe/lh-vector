@@ -7,6 +7,7 @@
  */
 
 #include <math.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
         /*  atoi        */
@@ -173,8 +174,6 @@ void readGame (void)
     scanf("%d", &m);
     readconf("n=");
     scanf("%d", &n1);
-    readconf("k=");
-    scanf("%d", &k);
     
     setmatrices(m, n1);
     readMatrices();
@@ -389,49 +388,50 @@ int main(int argc, char *argv[])
     /* parse options    */
     while ( (c = getopt (argc, argv, "if:vI:mae:")) != -1)
         switch (c)
-            {
+        {
 	    case 'a':
 	        flags.boutinvAB = 1;
-		break;
+			break;
 	    case 'e':
-		k2 = atoi(optarg);
-		break;
-            case 'I':
-	        flags.interactcount = atoi(optarg);
-            case 'i':
-                flags.binteract  = 1;
-                printf("Interactive flag set.\n");
-                break;
-			case 'f':
-				lcpout = fopen(optarg, "w+");
-				break;
-            case 'v':
-                flags.bouttabl   = 1;
-                printf("Verbose tableau output.\n");
-                break;
-			case 'm':
-				flags.binitmethod = 0;
-				break;
-            case '?':
-                if (isprint (optopt))
-                    fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-                else
-                    fprintf (stderr,
-                             "Unknown option character `\\x%x'.\n",
-                              optopt);
+			k2 = atoi(optarg);
+			break;
+        case 'I':
+	    	flags.interactcount = atoi(optarg);
+        case 'i':
+        	flags.binteract  = 1;
+            printf("Interactive flag set.\n");
+            break;
+		case 'f':
+			lcpout = fopen(optarg, "w+");
+			break;
+        case 'v':
+            flags.bouttabl   = 1;
+            printf("Verbose tableau output.\n");
+            break;
+		case 'm':
+			flags.binitmethod = 0;
+			break;
+        case '?':
+            if (isprint (optopt))
+                fprintf (stderr, "Unknown option `-%c'.\n", optopt);
+            else
+                fprintf (stderr,
+                         "Unknown option character `\\x%x'.\n",
+                         optopt);
                 return 1;
             default:
                 abort ();
-            }
+        }
     /* options are parsed and flags set */
 
 	readGame();
+	k = 1;
 	convert();
 	if(lcpout != NULL)
 	{
 		printLCP();
 	}
-    runlemke(flags); 
+    computeEquilibria(flags); 
 	freematrices(m);
     return 0;
 }

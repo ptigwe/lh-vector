@@ -8,7 +8,6 @@ int main(int argc, char** argv)
 	int n = atoi(argv[1]);
 	printf("m= %d\n", n);
 	printf("n= %d\n", n);
-	printf("k= 1\n");
 	printf("A=\n");
 	int i, j;
 	for(i = 0; i < n; ++i)

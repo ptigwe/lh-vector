@@ -3,6 +3,9 @@
  * computing with rationals
  * 22 Apr 2000
  */
+#ifndef RAT_H
+#define RAT_H
+
 #ifdef GLEMKE
 
 #include "gmp.h"
@@ -107,3 +110,5 @@ int rattoa (Rat r, char *s);
 
 /* converts rational  a  to  double                     */
 double rattodouble (Rat a);
+
+#endif

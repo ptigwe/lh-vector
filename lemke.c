@@ -16,6 +16,8 @@
 #include "lemke.h"
 
 #include "mp.h"
+#include "equilibrium.h"
+#include "list.h"
 
 /* used for tableau:    */
 #define Z(i) (i)
@@ -1088,13 +1090,8 @@ void runlemke(Flagsrunlemke flags)
     int leave, enter, z0leave;
 
     pivotcount = 1;
+	
     initstatistics();
-
-    isqdok();
-    /*  printf("LCP seems OK.\n");      */
-
-    filltableau();
-    /*  printf("Tableau filled.\n");    */
 
     if (flags.binitabl)
         {
@@ -1153,11 +1150,103 @@ void runlemke(Flagsrunlemke flags)
     
     if(k2 > 0 && k2 < (n - 1))
     {
-	restart(flags);
+		restart(flags);
     }   
     notokcopysol();
 }
 
+/* Copy the tableau from the given equilibrium to be
+ * used for computation */
+void copyEquilibrium(Equilibrium eq)
+{
+	int i, j;
+	for(i = 0; i < n; ++i)
+	{
+		for(j = 0; j < n+2; ++j)
+		{
+			copy(A[i][j], eq.A[i][j]);
+		}
+	}
+	
+	for(i = 0; i < n+2; ++i)
+	{
+		copy(scfa[i], eq.scfa[i]);
+	}
+	
+	for(i = 0; i < 2*n+1; ++i)
+	{
+		bascobas[i] = eq.bascobas[i];
+		whichvar[i] = eq.whichvar[i];
+	}
+	copy(det, eq.det);
+}
 
+/* Setup the covering vector for the Artificial Equilibrium */
+void setupArtificial()
+{
+	int i;
+	/* Copy the new covering vector into the tableau */
+    for(i = 0; i < n; ++i)
+    {
+		mp tmp;
+		if(i == k+1)
+		{
+			itomp(0, tmp);
+		}
+		else
+		{
+			itomp(1, tmp);
+		}
+		copy(A[i][TABCOL(Z(0))], tmp);
+    }
+}
 
+/* Compute all equilibrium */
+void computeEquilibria(Flagsrunlemke flags)
+{
+	int maxk = nrows + ncols;
+	
+	node* neg = newnode();
+	node* pos = newnode();
+	
+    isqdok();
+    /*  printf("LCP seems OK.\n");      */
+    filltableau();
+    /*  printf("Tableau filled.\n");    */
+	
+	/* Store the artificial equilibrium */
+	Equilibrium eq =  createEquilibrium(A, scfa, det, bascobas, whichvar, n);
+	neg->eq = eq;
+	
+	/* Compute and store the first equilibrium */
+	runlemke(flags);
+	eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
+	printEquilibrium(eq);
+	pos->eq = eq;
+	
+	/* Label 1 links the first equilibrium from both list */
+	neg->link[0] = 0; 
+	pos->link[0] = 0;
+	
+	/* All labels for the artificial equilibrium */
+	for(k = 2; k <= maxk; ++k)
+	{
+		/* Restart from the artificial equilibrium with k as the missing label */
+		copyEquilibrium(neg->eq);
+		setupArtificial();
+		runlemke(flags);
+		
+		/* Create the equilibrium and add it to the list */
+		eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
+		/* The equilibrium is at the index j in the list */
+		int j = addEquilibrium(pos, eq);
+		/* Label k links both equilibria together */
+		neg->link[k-1] = j;
+		node* p = getNodeat(pos, j);
+		p->link[k-1] = 0;
+	}
+	
+	printf("Equilibria discovered: %d\n", listlength(pos));
+	printlist(pos);
+}
 

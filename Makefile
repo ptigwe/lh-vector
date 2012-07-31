@@ -22,9 +22,9 @@ DEPFILE = Depend
 
 COMOBJ  = alloc.o col.o mp.o
 
-LEMKE   = rat.o lemke.o
+LEMKE   = rat.o equilibrium.o list.o lemke.o
 
-GLEMKE  = gmpwrap.o grat.o glemke.o
+GLEMKE  = gmpwrap.o grat.o glist.o gequilibrium.o glemke.o 
 
 INLEMOBJ  = inlemke.o 
 
@@ -51,6 +51,9 @@ inlh: $(INLH)
 inglh: $(INGLH)
 	$(CC) -c  -D GLEMKE $(CFLAGS) $(CPPFLAGS) inlemkehowson.c -o inlemkehowson.o;
 	$(CC) $(CFLAGS) $(INGLH) $(LDFLAGS) $(GMPLIB) -o inlh
+	
+glist.o: list.c
+	$(CC) -c -D GLEMKE $(CFLAGS) list.c -o glist.o
 
 inlemke: $(INLEMKE)
 	$(CC) $(CFLAGS) $(INLEMKE) -o inlemke
