@@ -951,7 +951,7 @@ void getinvAB(int verbose)
             {
                 if(k == j) /* The jth row of the ith column is 1 other rows are 0 */
                 {
-                    itomp(1, invAB[k][i]);
+                    copy(invAB[k][i], det);
                 }
                 else
                 {
@@ -1032,7 +1032,7 @@ void restart(Flagsrunlemke flags)
             linint(sum, 1, tmp, 1);
             /*sum = ratadd(sum, tmp);*/
         }
-	changesign(sum);
+		changesign(sum);
         copy(sol[i], sum);
     } 
 
@@ -1146,10 +1146,10 @@ void runlemke(Flagsrunlemke flags)
     if (flags.blexstats)
         outstatistics();
 
-    getinvAB(flags.boutinvAB);
     
     if(k2 > 0 && k2 < (n - 1))
     {
+	    getinvAB(flags.boutinvAB);
 		restart(flags);
     }   
     notokcopysol();
@@ -1201,13 +1201,43 @@ void setupArtificial()
     }
 }
 
+node* neg;
+node* pos;
+void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
+{
+	node* cur = (isneg) ? neg : pos;
+	node* res = (isneg) ? pos : neg;
+	
+	cur = getNodeat(cur, i);
+	Equilibrium eq;
+	int maxk = nrows + ncols;
+	for(k2 = 1; k2 <= maxk; ++k2)
+	{
+		if(cur->link[k2-1] != -1)
+			continue;
+			
+		copyEquilibrium(cur->eq);
+	    getinvAB(flags.boutinvAB);
+		restart(flags);
+		/* Create the equilibrium and add it to the list */
+		eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
+		/* The equilibrium is at the index j in the list */
+		int j = addEquilibrium(res, eq);
+		/* Label k links both equilibria together */
+		cur->link[k2-1] = j;
+		node* p = getNodeat(res, j);
+		p->link[k2-1] = i;
+	}
+}
+
 /* Compute all equilibrium */
 void computeEquilibria(Flagsrunlemke flags)
 {
 	int maxk = nrows + ncols;
+	int negi, posi;
 	
-	node* neg = newnode();
-	node* pos = newnode();
+	neg = newnode(n-2);
+	pos = newnode(n-2);
 	
     isqdok();
     /*  printf("LCP seems OK.\n");      */
@@ -1246,7 +1276,37 @@ void computeEquilibria(Flagsrunlemke flags)
 		p->link[k-1] = 0;
 	}
 	
-	printf("Equilibria discovered: %d\n", listlength(pos));
+	negi = 1;
+	posi = 0;
+	int isneg = 0;
+	
+	while(1)
+	{
+		if(isneg)
+		{
+			while(negi < listlength(neg))
+			{
+				computeEquilibriafromnode(negi, isneg, flags);
+				negi++;
+			}
+		}
+		else
+		{
+			while(posi < listlength(pos))
+			{
+				computeEquilibriafromnode(posi, isneg, flags);
+				posi++;
+			}
+		}
+		isneg = !isneg;
+		if((negi == listlength(neg)) && (posi == listlength(pos)))
+			break;
+	}
+	
+	printf("Equilibria discovered: %d\n", (listlength(neg) - 1 + listlength(pos)));
+	printf("%d-ve index:\n", negi);
+	printlist(neg);
+	printf("%d+ve index:\n", posi);
 	printlist(pos);
 }
 

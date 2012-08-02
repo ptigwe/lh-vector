@@ -5,13 +5,12 @@ The Lemke Howson algorithm simulated with the use of covering vectors.
 
 Changes:
 ============
-- Added the functionality to compute the first set of positively indexed
-  equilibrium from the artificial equilibrium. For each equilibrium that
-  is computed, it outputs which of the missing labels links it to the 
-  artificial equilibrium. Example 4->0, means the missing label 4 leads to
-  the artificial equilibrium, otherwise, 5->-1 means 5 leads to some other
-  equilibrium which has not yet been computed.
-- A test for dxd dual-cyclic polytopes has been added
-  _'test/dualcyclic/dualcyclictest'_ to test the fact that all games which
-  fall under this category has a unique equilibrium.
-- The input format has also been changed to avoid computing only on equilibrium
+- Added the functionality to compute all equilibrium reachable from the
+  artificial equilibrium. The final output shows the number of equilibria
+  which were discovered, after which it displays all the negative indexed
+  equilibria along with the number of the positive indexed equilibria which
+  it is linked to with a given missing label (where the format k->i means 
+  the k-th label leads to the i-th positively indexed equilibrium). This 
+  is then followed by the list of positively linked equilibria, and the 
+  number of the negatively indexed equilibria it is linked to with a given 
+  label (same format applies).

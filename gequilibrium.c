@@ -38,6 +38,7 @@ Equilibrium createEquilibrium(gmpt** A, gmpt* scfa, gmpt det, int* bascobas, int
 		eq.bascobas[i] = bascobas[i];
 		eq.whichvar[i] = whichvar[i];
 	}
+	ginit(eq.det);
 	gset(eq.det, det);
 	
 	eq.lcpdim = n;
@@ -62,6 +63,8 @@ Rat* getStrategies(Equilibrium eq)
 	
 	int i, row;
 	gmpt num, den;
+	ginit(num);
+	ginit(den);
 	
 	for (i=1; i<=n; i++) 
     {
@@ -90,6 +93,8 @@ Rat* getStrategies(Equilibrium eq)
 			strat[i-1] = ratfromi(0);
 		}
     }   /* end of  for (i=...)          */
+	gclear(num);
+	gclear(den);
 	return strat;
 }
 
