@@ -47,29 +47,49 @@ Rat itorat(int num, int den)
 	return r;
 }
 
+Rat gmptorat(gmpt num, gmpt den)
+{
+	Rat r = ratinit();
+	gset(r.num, num);
+	gset(r.den, den);
+	return r;
+}
+
+Rat ratfromgmp(gmpt a)
+{
+	Rat rat = ratinit();
+	gset(rat.num, a);
+	gitomp(1, rat.den);
+	return rat;
+}
+
 /* Parses a string of characters of the format "num" or "num/den" 
  * and converts it to a rational number */
 Rat parseRat(char* srat, const char* info, int j)
 {
 	char snum[MAXSTR], sden[MAXSTR];
-	int num, den;
+	gmpt num, den;
+	ginit(num);
+	ginit(den);
 	
 	atoaa(srat, snum, sden);
-	num = atoi(snum);
+	mpz_set_str(num, snum, 10);
     if (sden[0]=='\0') 
-        den = 1;
+        gitomp(1, den);
     else
     {
-        den = atoi(sden);
-        if (den<1)
+        mpz_set_str(den, sden, 10);
+        if (gnegative(den) || gzero(num))
         {
+			char str[MAXSTR];
+			gmptoa(den, str);
             fprintf(stderr, "Warning: Denominator "); 
-            fprintf(stderr, "%d of %s[%d] set to 1 since not positive\n", 
-                    den, info, j+1);
-            den = 1;  
+            fprintf(stderr, "%s of %s[%d] set to 1 since not positive\n", 
+                    str, info, j+1);
+			gitomp(1, den);
         }
     }
-	Rat r = itorat(num, den);
+	Rat r = gmptorat(num, den);
 	return r;
 }
 
@@ -91,10 +111,24 @@ Rat parseDecimal(char* srat, const char* info, int j)
 	}
 	count = strlen(sub+1);
 	
-	int num = floor(x * pow(10, count));
-	int den = pow(10, count);
+	char* str = strtok(srat, ".");
+	strcat(str, strtok(NULL, "."));
 	
-	Rat rat = itorat(num, den);
+	/*int num = floor(x * pow(10, count));*/
+	gmpt num;
+	mpz_set_str(num, str, 10);
+	
+	/*int den = pow(10, count);*/
+	int i;
+	strcpy(str, "10");
+	for(i = 1; i < count; ++i)
+	{
+		strcat(str, "0");
+	}
+	gmpt den;
+	mpz_set_str(den, str, 10);
+	
+	Rat rat = gmptorat(num, den);
 	return rat;
 }
 

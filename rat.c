@@ -21,27 +21,44 @@ Rat itorat(int num, int den)
 	return r;
 }
 
+Rat mptorat(mp num, mp den)
+{
+	Rat rat;
+	copy(rat.num, num);
+	copy(rat.den, den);
+	return rat;
+}
+
+Rat ratfrommp(mp num)
+{
+	mp den;
+	itomp(1, den);
+	return mptorat(num, den);
+}
+
 Rat parseRat(char* srat, const char* info, int j)
 {
 	char snum[MAXSTR], sden[MAXSTR];
-	int num, den;
+	mp num, den;
 	
 	atoaa(srat, snum, sden);
-	num = atoi(snum);
+	atomp(snum, num);
     if (sden[0]=='\0') 
-        den = 1;
+        itomp(1, den);
     else
     {
-        den = atoi(sden);
-        if (den<1)
+        atomp(sden, den);
+        if (negative(den) || zero(den))
         {
+			char str[MAXSTR];
+			mptoa(den, str);
             fprintf(stderr, "Warning: Denominator "); 
-            fprintf(stderr, "%d of %s[%d] set to 1 since not positive\n", 
-                    den, info, j+1);
-            den = 1;  
+            fprintf(stderr, "%s of %s[%d] set to 1 since not positive\n", 
+                    str, info, j+1);
+            itomp(1, den);  
         }
     }
-	Rat r = itorat(num, den);
+	Rat r = mptorat(num, den);
 	return r;
 }
 
@@ -62,10 +79,23 @@ Rat parseDecimal(char* srat, const char* info, int j)
 	}
 	count = strlen(sub+1);
 	
-	int num = floor(x * pow(10, count));
-	int den = pow(10, count);
+	char* str = strtok(srat, ".");
+	strcat(str, strtok(NULL, "."));
 	
-	Rat rat = itorat(num, den);
+	/*int num = floor(x * pow(10, count));*/
+	mp num;
+	atomp(str, num);
+	/*int den = pow(10, count);*/
+	int i;
+	strcpy(str, "10");
+	for(i = 1; i < count; ++i)
+	{
+		strcat(str, "0");
+	}
+	mp den;
+	atomp(str, den);
+	
+	Rat rat = mptorat(num, den);
 	return rat;
 }
 

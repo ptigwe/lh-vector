@@ -51,6 +51,14 @@ void ratclear(Rat rat);
 /* Creates a rational number from two integers */
 Rat itorat(int num, int den);
 
+#ifdef GLEMKE
+Rat gmptorat(gmpt num, gmpt den);
+Rat ratfromgmp(gmpt a);
+#else
+Rat mptorat(mp num, mp den);
+Rat ratfrommp(mp a);
+#endif
+
 /* Parses a string that of the format "x", "x/y" and "x.y"
  * and returns the equivalent rational numbers */
 Rat ratfroma(char* str, const char* info, int j);
