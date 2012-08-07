@@ -48,6 +48,7 @@ Equilibrium createEquilibrium(gmpt** A, gmpt* scfa, gmpt det, int* bascobas, int
 
 void freeEquilibrium(Equilibrium eq)
 {
+    G2CLEAR(eq.A, eq.lcpdim, eq.lcpdim+2)
 	FREE2(eq.A, eq.lcpdim);
 	free(eq.scfa);
 	free(eq.bascobas);

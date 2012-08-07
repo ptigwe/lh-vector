@@ -42,7 +42,7 @@ void outlcp (void);
 
 /* flags for  runlemke  */
 typedef struct
-    {
+{
     int   maxcount  ;   /* max no. of iterations, infinity if 0         */
     int   bdocupivot;   /* Y/N  document pivot step                     */
     int   binitabl ;    /* Y/N  output entire tableau at beginning/end  */
@@ -52,9 +52,9 @@ typedef struct
     int   blexstats ;   /* Y/N  statistics on lexminratio tests         */
     int   interactcount;/* Number of interactive entries                */
 	int   binitmethod;  /* Used to select the initialisation method     */
-    int   boutinvAB;
-    }
-    Flagsrunlemke;
+    int   boutinvAB;	/* Y/N  output inverse of A_B                   */
+	int   bisArtificial;
+}Flagsrunlemke;
 
 /* solve LCP via Lemke's algorithm,
  * solution in  solz [0..lcpdim-1]

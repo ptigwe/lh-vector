@@ -385,6 +385,7 @@ int main(int argc, char *argv[])
     flags.interactcount = 0;
 	flags.binitmethod = 1;
     flags.boutinvAB = 0;
+	flags.bisArtificial = 1;
     /* parse options    */
     while ( (c = getopt (argc, argv, "if:vI:mae:")) != -1)
         switch (c)

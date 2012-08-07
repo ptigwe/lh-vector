@@ -932,7 +932,10 @@ int initLH2(Flagsrunlemke flags)
 /* Initialise the LH pivots given the flags */
 int initLH(Flagsrunlemke flags)
 {
-	return flags.binitmethod ? initLH1(flags) : initLH2(flags);
+	if(flags.bisArtificial)
+		return flags.binitmethod ? complement(initLH1(flags)) : complement(initLH2(flags));
+	else
+		return Z(0);
 }
 
 mp** invAB; /* Represents the inverse of AB */
@@ -998,91 +1001,6 @@ void getinvAB(int verbose)
 	colout();
     }
 }
-
-/* Restart from the current equilibrium using k2 as the missing label */
-void restart(Flagsrunlemke flags)
-{
-    /* vecd2 represents the covering vector when k2 is the missing label */
-    mp* vecd2 = TALLOC(n, mp);
-    int i;
-    for(i = 0; i < n; ++i)
-    {
-	if(i == (k2 + 1))
-	{
-	    itomp(0, vecd2[i]);
-	}
-	else
-	{
-	    itomp(1, vecd2[i]);
-	}
-    }
-   
-    /* sol represents the computed covering vector by multiplying
-     * invAB with vecd2, and multiplying the result by -1 */
-    mp* sol = TALLOC(n, mp);
-    for(i = 0; i < n; ++i)
-    {
-        int j;
-        mp sum;
-        itomp(0, sum);
-        for(j = 0; j < n; ++j)
-        {
-            mp tmp;
-            mulint(invAB[i][j], vecd2[j], tmp);
-            linint(sum, 1, tmp, 1);
-            /*sum = ratadd(sum, tmp);*/
-        }
-		changesign(sum);
-        copy(sol[i], sum);
-    } 
-
-    /* Copy the new covering vector into the tableau */
-    for(i = 0; i < n; ++i)
-    {
-       /*A[i][TABCOL(Z(0))] = sol[i];*/
-       copy(A[i][TABCOL(Z(0))], sol[i]);
-    }
-    printf("\nTableau with new covering vector\n");
-    outtabl();
-    printf("\nRestarting with missing label: %d\n", k2);
-
-    /* Pivot as usual except without using initLH */
-    int leave, enter, z0leave;
-    pivotcount = 1;
-
-    enter = Z(0);
-    leave = flags.binteract ? interactivevar(enter, &z0leave) :
-                    lexminvar(enter, &z0leave) ;
-
-    while (1)       /* main loop of complementary pivoting                  */
-        {
-        if(flags.interactcount)
-                flags.binteract = --flags.interactcount ? 1 : 0;
-        testtablvars();
-        if (flags.bdocupivot)
-            docupivot (leave, enter);
-        pivot (leave, enter);
-        if (z0leave)
-            break;  /* z0 will have value 0 but may still be basic. Amend?  */
-        if (flags.bouttabl)
-            outtabl();
-        enter = complement(leave);
-        leave = flags.binteract ? interactivevar(enter, &z0leave) :
-                lexminvar(enter, &z0leave) ;
-        if (pivotcount++ == flags.maxcount)
-            {
-            printf("------- stop after %d pivoting steps --------\n",
-                   flags.maxcount);
-            break;
-            }
-        }
-    
-        if (flags.boutsol)
-        outsol();
-    if (flags.blexstats)
-        outstatistics();
-
-}
 
 /* ------------------------------------------------------------ */ 
 void runlemke(Flagsrunlemke flags)
@@ -1094,13 +1012,14 @@ void runlemke(Flagsrunlemke flags)
     initstatistics();
 
     if (flags.binitabl)
-        {
+    {
         printf("After filltableau:\n");
         outtabl();
-        }
+    }
     
     /* now give the entering q-col its correct sign             */
-    negcol (RHS);   
+	if(flags.bisArtificial)
+    	negcol (RHS);   
     
     if (flags.bouttabl) 
         {
@@ -1109,7 +1028,7 @@ void runlemke(Flagsrunlemke flags)
         }
 
 	/* z0 enters the basis to obtain lex-feasible solution      */
-    enter = flags.binteract ? Z(0) : complement(initLH(flags));                                                   
+    enter = flags.binteract ? Z(0) : initLH(flags);                                                   
     leave = flags.binteract ? interactivevar(enter, &z0leave) :
 	            lexminvar(enter, &z0leave) ;
 	
@@ -1146,12 +1065,6 @@ void runlemke(Flagsrunlemke flags)
     if (flags.blexstats)
         outstatistics();
 
-    
-    if(k2 > 0 && k2 < (n - 1))
-    {
-	    getinvAB(flags.boutinvAB);
-		restart(flags);
-    }   
     notokcopysol();
 }
 
@@ -1201,6 +1114,55 @@ void setupArtificial()
     }
 }
 
+/* Restart from the current equilibrium using k2 as the missing label */
+void setupEquilibrium(Flagsrunlemke flags)
+{	
+    getinvAB(flags.boutinvAB);
+    /* vecd2 represents the covering vector when k2 is the missing label */
+    mp* vecd2 = TALLOC(n, mp);
+    int i;
+    for(i = 0; i < n; ++i)
+    {
+		if(i == (k2 + 1))
+		{
+	    	itomp(0, vecd2[i]);
+		}
+		else
+		{
+	    	itomp(1, vecd2[i]);
+		}
+    }
+   
+    /* sol represents the computed covering vector by multiplying
+     * invAB with vecd2, and multiplying the result by -1 */
+    mp* sol = TALLOC(n, mp);
+    for(i = 0; i < n; ++i)
+    {
+        int j;
+        mp sum;
+        itomp(0, sum);
+        for(j = 0; j < n; ++j)
+        {
+            mp tmp;
+            mulint(invAB[i][j], vecd2[j], tmp);
+            linint(sum, 1, tmp, 1);
+            /*sum = ratadd(sum, tmp);*/
+        }
+		changesign(sum);
+        copy(sol[i], sum);
+    } 
+
+    /* Copy the new covering vector into the tableau */
+    for(i = 0; i < n; ++i)
+    {
+       /*A[i][TABCOL(Z(0))] = sol[i];*/
+       copy(A[i][TABCOL(Z(0))], sol[i]);
+    }
+    printf("\nTableau with new covering vector\n");
+    outtabl();
+    printf("\nRestarting with missing label: %d\n", k2);
+}
+
 node* neg;
 node* pos;
 void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
@@ -1217,8 +1179,8 @@ void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
 			continue;
 			
 		copyEquilibrium(cur->eq);
-	    getinvAB(flags.boutinvAB);
-		restart(flags);
+		setupEquilibrium(flags);
+		runlemke(flags);
 		/* Create the equilibrium and add it to the list */
 		eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
 		/* The equilibrium is at the index j in the list */
@@ -1276,6 +1238,7 @@ void computeEquilibria(Flagsrunlemke flags)
 		p->link[k-1] = 0;
 	}
 	
+	flags.bisArtificial = 0;
 	negi = 1;
 	posi = 0;
 	int isneg = 0;
