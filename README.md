@@ -5,5 +5,5 @@ The Lemke Howson algorithm simulated with the use of covering vectors.
 
 Changes:
 ============
-- Fixed error with Rational Numbers. Large integer numbers were read incorrectly
-  in the previous versions.
+- Added bit string manipulation of the 2x4 dual cyclic polytope game
+  showing the Lemke-Howson path
