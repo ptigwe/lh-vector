@@ -1,6 +1,7 @@
 /* gmp-wrap.c
  * 13 July 2000
  * wrapper for GMP functions similar to  mp.h
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */ 
 
 #include <stdio.h>
@@ -29,14 +30,14 @@ int gmptoi(mpz_t a, int *result, int bcomplain)
     gmptoa(a, smp);
     *result = atoi(smp);
     if (*result == INT_MAX || *result == INT_MIN)
-        {
+    {
         if (bcomplain)
-            {
+        {
             printf("Warning: Long integer %s ", smp);
             printf("overflown, replaced by %d\n", *result);
-            }
-        return 1;
         }
+        return 1;
+    }
     else
         return 0;
 }

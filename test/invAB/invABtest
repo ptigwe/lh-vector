@@ -5,27 +5,27 @@ N=`grep 'n=.*' sample-input | sed 's/n= \([0-9]*\)/\1/'`
 C=`expr $M + $N`
 for k in $(eval echo {1..$C})
 do
-	echo -n "Testing label $k: "
-	sed "s/k=.*/k=$k/" sample-input > tmp
-	mv tmp sample-input
-	../../inlh -a $1 < sample-input > sample-output 
-	S=`grep -n 'Printing invAB:' sample-output | sed 's/\([0-9]*\).*/\1/'`
-	echo "n= `expr $C + 2`" > tmp
-	echo "k= $k" > tmp2
-	cat tmp tmp2 > tmp3
-	echo "invAB=" > tmp2
-	cat tmp3 tmp2 > tmp
-	tail -`expr $C + 2` sample-output > tmp2
-	cat tmp tmp2 > tmp3
-	./invABdtest < tmp3 > tmp
-	G=`grep "z0= .*" tmp | sed 's/z0= \([0-9^ ]*\)/\1/'`
-	E=`grep "z0= .*" sample-output | sed 's/z0= \([0-9^ ]*\)/\1/'`
+    echo -n "Testing label $k: "
+    sed "s/k=.*/k=$k/" sample-input > tmp
+    mv tmp sample-input
+    ../../inlh -a $1 < sample-input > sample-output 
+    S=`grep -n 'Printing invAB:' sample-output | sed 's/\([0-9]*\).*/\1/'`
+    echo "n= `expr $C + 2`" > tmp
+    echo "k= $k" > tmp2
+    cat tmp tmp2 > tmp3
+    echo "invAB=" > tmp2
+    cat tmp3 tmp2 > tmp
+    tail -`expr $C + 2` sample-output > tmp2
+    cat tmp tmp2 > tmp3
+    ./invABdtest < tmp3 > tmp
+    G=`grep "z0= .*" tmp | sed 's/z0= \([0-9^ ]*\)/\1/'`
+    E=`grep "z0= .*" sample-output | sed 's/z0= \([0-9^ ]*\)/\1/'`
 
-	if [ "$E" = "$G" ] 
-	then
-		echo "Passed"
-	else
-		echo "Failed"
-	fi
+    if [ "$E" = "$G" ] 
+        then
+        echo "Passed"
+    else
+        echo "Failed"
+    fi
 done
 rm -f tmp*

@@ -1,3 +1,8 @@
+/*
+  * list.h
+  * A list of equilibrium
+  * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+  */
 
 #ifndef LIST_H
 #define LIST_H

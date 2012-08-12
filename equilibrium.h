@@ -1,3 +1,9 @@
+/*
+ * equilibrium.h
+ * storing tableaus representing equilibrium, and computing the equilibrium
+ * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+ */
+ 
 /* Include rat.h before this file */
 #ifndef EQUILIBRIUM_H
 #define EQUILIBRIUM_H

@@ -1,3 +1,9 @@
+/*
+ * invABdtest.c
+ * Used to test the validity of the computation of
+ * the inverse of A_B.
+ * Author: Tobenna Peter, Igwe
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include "../../mp.h"

@@ -1,6 +1,7 @@
 /* lemke.h
  * 16 Apr 2000
  * declarations for lcp solver
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */
 
 /* #include before:  rat.h       */
@@ -50,10 +51,10 @@ typedef struct
     int   boutsol   ;   /* Y/N  output solution                         */
     int   binteract ;   /* Y/N  interactive pivoting                    */
     int   blexstats ;   /* Y/N  statistics on lexminratio tests         */
-    int   interactcount;/* Number of interactive entries                */
-	int   binitmethod;  /* Used to select the initialisation method     */
-    int   boutinvAB;	/* Y/N  output inverse of A_B                   */
-	int   bisArtificial;
+    int   interactcount;/* Number of interactive entries                *//* GSoC12: Tobenna Peter, Igwe */
+	int   binitmethod;  /* Used to select the initialisation method     *//* GSoC12: Tobenna Peter, Igwe */
+    int   boutinvAB;	/* Y/N  output inverse of A_B                   *//* GSoC12: Tobenna Peter, Igwe */
+	int   bisArtificial;/* If the current equilibrium is artificial     *//* GSoC12: Tobenna Peter, Igwe */
 }Flagsrunlemke;
 
 /* solve LCP via Lemke's algorithm,
@@ -63,6 +64,7 @@ typedef struct
 void runlemke(Flagsrunlemke flags);
 
 /* Compute all equilibria */
+/* GSoC12: Tobenna Peter, Igwe */
 void computeEquilibria(Flagsrunlemke flags);
 
 #endif

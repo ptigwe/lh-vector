@@ -1,6 +1,7 @@
 /* gmpwrap.h
  * 13 July 2000
  * wrapper for GMP functions similar to  mp.h
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */ 
 
 /* include before:  "gmp.h"	*/

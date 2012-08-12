@@ -3,37 +3,37 @@
 
 for N in $(eval echo 2 4 6 8)
 do
-	echo "Testing $Nx$N"
-	for k in $(eval echo {1..$((2*N))})
-	do
-		echo "Testing label $k \c"
-		./lh-label -d $N -l $k > gpath
-		grep "newlabel .*" gpath | sed 's/newlabel \([0-9]*\)/\1/' > tmp
-		mv tmp gpath
-		cat sample gpath > tmp
-		mv tmp gpath
-		sed "s/m=.*/m=$N/" gpath > tmp
-		mv tmp gpath
-		sed "s/n=.*/n=$N/" gpath > tmp
-		mv tmp gpath
-		../../../path/path -m < gpath > tmp
-		mv tmp gpath
-	
-		sed "s/k=.*/k=$k/" $N"x"$N > tmp
-		mv tmp $N"x"$N
-		../../../inlh -m < $N"x"$N > cpath
-		grep -x 'leaving:.*' cpath > tmp
-		mv tmp cpath
-		sed 's/leaving: \([a-z0-9]*\).*/\1/' cpath > tmp
-		mv tmp cpath
-	
-		S=`diff cpath gpath`
-		if [ -z $S ] 
-		then
-			echo "Passed"
-		else
-			echo "Failed"
-		fi
-	done
+    echo "Testing $Nx$N"
+    for k in $(eval echo {1..$((2*N))})
+    do
+        echo "Testing label $k \c"
+        ./lh-label -d $N -l $k > gpath
+        grep "newlabel .*" gpath | sed 's/newlabel \([0-9]*\)/\1/' > tmp
+        mv tmp gpath
+        cat sample gpath > tmp
+        mv tmp gpath
+        sed "s/m=.*/m=$N/" gpath > tmp
+        mv tmp gpath
+        sed "s/n=.*/n=$N/" gpath > tmp
+        mv tmp gpath
+        ../../../path/path -m < gpath > tmp
+        mv tmp gpath
+
+        sed "s/k=.*/k=$k/" $N"x"$N > tmp
+        mv tmp $N"x"$N
+        ../../../inlh -m < $N"x"$N > cpath
+        grep -x 'leaving:.*' cpath > tmp
+        mv tmp cpath
+        sed 's/leaving: \([a-z0-9]*\).*/\1/' cpath > tmp
+        mv tmp cpath
+
+        S=`diff cpath gpath`
+        if [ -z $S ] 
+            then
+            echo "Passed"
+        else
+            echo "Failed"
+        fi
+    done
 done
 rm cpath gpath

@@ -1,7 +1,7 @@
 /* col.h                                                        */
 /* automatic pretty printing in columns                         */
 /* 17 Apr 2000                                                  */
-/* Bernhard von Stengel  stengel@maths.lse.ac.uk      */
+/* Author: Bernhard von Stengel  stengel@maths.lse.ac.uk      */
 
 /* no of bytes of buffer to print into.  Buffer will be 
  * printed and flushed if full (not assumed to happen),

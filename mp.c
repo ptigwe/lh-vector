@@ -1,5 +1,6 @@
 /* mp.c
  * 27 Apr 2000
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */
 
 #include <stdio.h>

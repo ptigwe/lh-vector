@@ -1,6 +1,7 @@
-/* alloc.c
+/* alloc.h
  * 17 Apr 2000
  * memory allocation with error output if fails
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */
 
 #include <stdio.h>
@@ -11,15 +12,15 @@
 
 void * xcalloc(size_t n, size_t s, int l, char* f)
 {
-void *tmp;
-tmp = calloc(n, s);
-if (tmp==NULL)
+    void *tmp;
+    tmp = calloc(n, s);
+    if (tmp==NULL)
     {
-    fprintf(stderr, "Failure to allocate %d objects of %d bytes ", n, s); 
-    fprintf(stderr, "on line %d of %s\n", l, f);
-    fprintf(stderr, "Emergency stop.\n");
-    exit(1);
+        fprintf(stderr, "Failure to allocate %d objects of %d bytes ", n, s); 
+        fprintf(stderr, "on line %d of %s\n", l, f);
+        fprintf(stderr, "Emergency stop.\n");
+        exit(1);
     }
-return tmp;
+    return tmp;
 }
 

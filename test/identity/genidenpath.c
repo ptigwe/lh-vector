@@ -1,3 +1,9 @@
+/*
+ * genidentity.c
+ * Generates the path of an identity matrix from the 
+ * artificial equilibrium using a given missing label
+ * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+ */
 #include <stdlib.h>
 #include <stdio.h>
 

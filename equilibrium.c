@@ -1,3 +1,8 @@
+/*
+ * equilibrium.c
+ * storing tableaus representing equilibrium, and computing the equilibrium
+ * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+ */
 
 #include "rat.h"
 #include "lemke.h"

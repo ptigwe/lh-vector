@@ -1,7 +1,7 @@
 /* col.c                                                        */
 /* automatic pretty printing in columns                         */
 /* 17 Apr 2000                                                  */
-/* Bernhard von Stengel  stengel@maths.lse.ac.uk      		*/
+/* Author: Bernhard von Stengel  stengel@maths.lse.ac.uk      	*/
 
 #include <stdio.h>
 #include <stdlib.h>

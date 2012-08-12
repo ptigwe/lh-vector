@@ -1,6 +1,7 @@
 /* alloc.h
  * 17 Apr 2000
  * memory allocation with error output if fails
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */
 
 #define CALLOC(n,s) xcalloc((size_t) n, (size_t) s,__LINE__,__FILE__)

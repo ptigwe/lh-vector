@@ -1,3 +1,12 @@
+/*
+  * list.c
+  * A list of equilibrium.
+  * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+  *
+  * Note: This file generates both list.o and glist.o,
+  * to compile the file with gnump use the -DGLEMKE flag
+  */
+  
 #include "equilibrium.h"
 #include "list.h"
 

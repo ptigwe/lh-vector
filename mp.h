@@ -1,6 +1,7 @@
 /* mp.h
  * 13 July 2000
  * multiprecision routines taken from  lrs 
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */ 
 
 /***********/

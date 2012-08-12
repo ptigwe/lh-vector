@@ -1,6 +1,7 @@
 /* rat.c 
  * computing with rationals
  * 27 Apr 2000
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */
 
 #include <stdio.h>
@@ -10,8 +11,7 @@
 	/* sprintf	*/
 #include "rat.h"
 
-	/* for improved precision in  ratadd(a, b)	*/
-
+/* Creates a rational number from two integers */
 Rat itorat(int num, int den)
 {
 	Rat r;
@@ -21,6 +21,20 @@ Rat itorat(int num, int den)
 	return r;
 }
 
+/* converts integer i to rational */
+/* GSoC12: Tobenna Peter, Igwe (Edited)*/
+Rat ratfromi(int i)
+{
+    Rat tmp;
+    /*tmp.num = i; */
+	itomp(i, tmp.num);
+    /*tmp.den = 1; */
+	itomp(1, tmp.den);
+    return tmp;
+}
+
+/* Create a rational number from two mp numbers */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat mptorat(mp num, mp den)
 {
 	Rat rat;
@@ -29,6 +43,8 @@ Rat mptorat(mp num, mp den)
 	return rat;
 }
 
+/* Create a rational number from one mp number */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat ratfrommp(mp num)
 {
 	mp den;
@@ -36,6 +52,9 @@ Rat ratfrommp(mp num)
 	return mptorat(num, den);
 }
 
+/* Parses a string that of the format "x" and "x/y"
+ * and returns the equivalent rational numbers */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat parseRat(char* srat, const char* info, int j)
 {
 	char snum[MAXSTR], sden[MAXSTR];
@@ -62,6 +81,9 @@ Rat parseRat(char* srat, const char* info, int j)
 	return r;
 }
 
+/* Parses a string that of the format "x.y"
+ * and returns the equivalent rational numbers */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat parseDecimal(char* srat, const char* info, int j)
 {
 	double x;
@@ -99,6 +121,9 @@ Rat parseDecimal(char* srat, const char* info, int j)
 	return rat;
 }
 
+/* Parses a string that of the format "x", "x/y" and "x.y"
+ * and returns the equivalent rational numbers */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat ratfroma(char* srat, const char* info, int j)
 {
 	char* pos;
@@ -115,6 +140,8 @@ Rat ratfroma(char* srat, const char* info, int j)
 	return rat;
 }
 
+/* returns sum  a+b, normalized                         */
+/* GSoC12: Tobenna Peter, Igwe (Edited) */
 Rat ratadd (Rat a, Rat b)
 {
     /*
@@ -146,73 +173,14 @@ Rat ratadd (Rat a, Rat b)
     return a ; 
 }
 
+/* returns quotient  a/b, normalized                    */
 Rat ratdiv (Rat a, Rat b)
 {
     return ratmult(a, ratinv(b) );
 }
 
-Rat ratfromi(int i)
-{
-    Rat tmp;
-    /*tmp.num = i; */
-	itomp(i, tmp.num);
-    /*tmp.den = 1; */
-	itomp(1, tmp.den);
-    return tmp;
-}
-
-/*
-int ratgcd(int a, int b)
-{
-    int c;
-    if (a < 0) a = -a;
-    if (b < 0) b = -b;
-    if (a < b) { c=a; a=b; b=c; }
-    while (b != 0)
-        {
-        c = a % b;
-        a = b ;
-        b = c ;
-        }
-    return a;
-}*/
-
-void ratgcd(mp a, mp b, mp c)
-{
-	mp d;
-	copy(c, a);
-	copy(d, b);
-	gcd(c, d);
-}
-
-Rat ratinv (Rat a)
-{
-    mp x;
-
-    /*x = a.num ;*/
-	copy(x, a.num);
-    /*a.num = a.den ;*/
-	copy(a.num, a.den);
-    /*a.den = x ;*/
-	copy(a.den, x);
-    return a;
-}
-Bool ratiseq (Rat a, Rat b)
-{
-	/*return (a.num == b.num && a.den == b.den);*/
-	mp c;
-	itomp(1, c);
-	int x = comprod(a.num, c, b.num, c);
-	int y = comprod(a.den, c, b.den, c);
-    return ((x == 0) && (y == 0));
-}
-
-Bool ratgreat (Rat a, Rat b)
-{
-    Rat c = ratadd(a, ratneg(b));
-    return (positive(c.num));
-}
-
+/* returns product  a*b, normalized                     */
+/* GSoC12: Tobenna Peter, Igwe (Edited) */
 Rat ratmult (Rat a, Rat b)
 {
     mp x;
@@ -236,6 +204,8 @@ Rat ratmult (Rat a, Rat b)
     return ratreduce(a);        /* a  or  b  might be non-normalized    s*/
 }
 
+/* returns -a, normalized only if a normalized          */
+/* GSoC12: Tobenna Peter, Igwe (Edited)*/
 Rat ratneg (Rat a)
         /* returns -a                                           */
 {
@@ -244,6 +214,10 @@ Rat ratneg (Rat a)
     return  a;
 }
 
+/* normalizes (make den>0, =1 if num==0)
+ * and reduces by  gcd(num,den)
+ */
+/* GSoC12: Tobenna Peter, Igwe (Edited) */
 Rat ratreduce (Rat a)
 {
     if (zero(a.num))
@@ -274,6 +248,52 @@ Rat ratreduce (Rat a)
     return a;
 }
 
+/* computes gcd of integers  a  and  b,  0 if both 0 and stores the value in c*/
+void ratgcd(mp a, mp b, mp c)
+{
+	mp d;
+	copy(c, a);
+	copy(d, b);
+	gcd(c, d);
+}
+
+/* GSoC12: Tobenna Peter, Igwe (Edited)*/
+Rat ratinv (Rat a)
+{
+    mp x;
+    
+    /*x = a.num ;*/
+	copy(x, a.num);
+    /*a.num = a.den ;*/
+	copy(a.num, a.den);
+    /*a.den = x ;*/
+	copy(a.den, x);
+    return a;
+}
+
+/* returns Boolean condition that a > b                 */
+Bool ratgreat (Rat a, Rat b)
+{
+    Rat c = ratadd(a, ratneg(b));
+    return (positive(c.num));
+}
+
+/* returns Boolean condition that a==b
+ * a, b are assumed to be normalized
+ */
+/* GSoC12: Tobenna Peter, Igwe (Edited) */
+Bool ratiseq (Rat a, Rat b)
+{
+	/*return (a.num == b.num && a.den == b.den);*/
+	mp c;
+	itomp(1, c);
+	int x = comprod(a.num, c, b.num, c);
+	int y = comprod(a.den, c, b.den, c);
+    return ((x == 0) && (y == 0));
+}
+
+/* Returns the maximum element in an array of n Rat elements */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat maxrow(Rat* rat, int n)
 {
 	int i;
@@ -285,6 +305,8 @@ Rat maxrow(Rat* rat, int n)
 	return Mrow;
 }
 
+/* Returns the maximum element in an mxn matrix of Rat elements */
+/* GSoC12: Tobenna Peter, Igwe */
 Rat maxMatrix(Rat** rat, int m, int n)
 {
 	int i;
@@ -299,14 +321,17 @@ Rat maxMatrix(Rat** rat, int m, int n)
 	return M;
 }
 
+/* converts rational  r  to string  s, omit den 1
+ * s  must be sufficiently long to contain result
+ * returns length of string
+ */
 int rattoa (Rat r, char *s)
 {
 	char str[MAXSTR];
     int l, a;
-    /*l = sprintf(s, "%d", r.num);*/
+	/* GSoC12: Tobenna Peter, Igwe */
 	mptoa(r.num, str);
     l = sprintf(s, "%s", str);
-    /*if (r.den != 1)*/
 	if(!one(r.den))
     {
         /*a = sprintf(s+l, "/%d", r.den);*/
@@ -317,11 +342,13 @@ int rattoa (Rat r, char *s)
     return l;
 }
 
+/* converts rational  a  to  double                     */
+/* GSoC12: Tobenna Peter, Igwe (Edited) */
 double rattodouble(Rat a)
-{
+{    
+    /*return (double)a.num/(double)a.den*/
 	int num, den;
 	mptoi(a.num, &num, 1);
 	mptoi(a.den, &den, 1);
-    /*return (double) a.num / (double) a.den ;*/
 	return (double)num / (double)den;
 }

@@ -1,3 +1,8 @@
+/*
+ * genidentity.c
+ * Generates an identity matrix game
+ * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+ */
 #include <stdio.h>
 #include <stdlib.h>
 

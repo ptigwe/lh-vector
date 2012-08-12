@@ -4,6 +4,7 @@
  * options:
  *      -i      run pivoting interactively, suggested with  '-v'
  *      -v      verbose: output tableau at every pivoting step
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
  */
 
 #include <stdio.h>
