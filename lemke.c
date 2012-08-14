@@ -992,16 +992,6 @@ void getinvAB(int verbose)
 
     if(verbose)
     {
-        colset(n);
-        printf("\nz0= ");
-        for(i = 0; i < n; ++i)
-        {
-            char str[MAXSTR];
-            mptoa(A[i][TABCOL(Z(0))], str);
-            printf("%s ", str);
-        }
-        colout();
-
         printf("\nPrinting invAB:\n");
         colset(n);
 
@@ -1016,6 +1006,17 @@ void getinvAB(int verbose)
             }
         }
         colout();
+        
+        colset(n);
+        printf("\nz0= ");
+        for(i = 0; i < n; ++i)
+        {
+            char str[MAXSTR];
+            mptoa(A[i][TABCOL(Z(0))], str);
+            printf("%s ", str);
+        }
+        colout();
+        printf("\n");
     }
 }
 
@@ -1085,12 +1086,15 @@ void runlemke(Flagsrunlemke flags)
         outstatistics();
 
     notokcopysol();
+    /*GSOC: For test purpose only */
+    if(flags.boutinvAB)
+        getinvAB(flags.boutinvAB);
 }
 
 /* Copy the tableau from the given equilibrium to be
 * used for computation */
 /* GSoC12: Tobenna Peter, Igwe */
-    void copyEquilibrium(Equilibrium eq)
+void copyEquilibrium(Equilibrium eq)
 {
     int i, j;
     for(i = 0; i < n; ++i)

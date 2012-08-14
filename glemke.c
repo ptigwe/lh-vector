@@ -1139,12 +1139,16 @@ void runlemke(Flagsrunlemke flags)
         outstatistics();
 
     notokcopysol();
+    
+    /*GSOC: For test purpose only */
+    if(flags.boutinvAB)
+        getinvAB(flags.boutinvAB);
 } 
 
 /* Copy the tableau from the given equilibrium to be
 * used for computation */
 /* GSoC12: Tobenna Peter, Igwe */
-    void copyEquilibrium(Equilibrium eq)
+void copyEquilibrium(Equilibrium eq)
 {
     int i, j;
     for(i = 0; i < n; ++i)

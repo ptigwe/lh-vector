@@ -1,20 +1,27 @@
 #!/bin/sh
 #Test identity matrices using the first method for converting to an equivalent path
 N=$1
-../identity/genidentity $N > input
-for k in $(eval echo {1..$((2*N))})
+for i in $(eval echo {1..10})
 do
-    echo "Testing label $k \c"
-    ../identity/genidenpath $N $k > tmp
-    ../../path/path < tmp > gpath
-    sed "s/k=.*/k=$k/" input > tmp
-    mv tmp input
-    ../../inlh < input > cpath
-    grep -x 'leaving:.*' cpath > tmp
-    mv tmp cpath
-    sed 's/leaving: \([a-z0-9]*\).*/\1/' cpath > tmp
-    mv tmp cpath
-    S=`diff cpath gpath`
+    echo -n "Testing $i/10"
+    d="0.$i"
+    r="$i\/10"
+    ../identity/genidentity $N > input
+    sed 's/1 0/'"$r"' 0/' input | sed 's/0 1/0 '"$r"'/' > rinput
+    sed 's/1 0/'"$d"' 0/' input | sed 's/0 1/0 '"$d"'/' > dinput
+    ../../inlh  < rinput > rpath
+    ../../inlh  < dinput > dpath
+    
+    grep -x 'leaving:.*' rpath > tmp
+    mv tmp rpath
+    sed 's/leaving: \([a-z0-9]*\).*/\1/' rpath > tmp
+    mv tmp rpath
+
+    grep -x 'leaving:.*' dpath > tmp
+    mv tmp dpath
+    sed 's/leaving: \([a-z0-9]*\).*/\1/' dpath > tmp
+    mv tmp dpath
+    S=`diff dpath rpath`
     if [ -z $S ] 
         then
         echo "Passed"
@@ -22,4 +29,4 @@ do
         echo "Failed"
     fi
 done
-rm *input *path
+rm *input dpath rpath

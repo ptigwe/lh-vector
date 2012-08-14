@@ -16,6 +16,10 @@ echo "\nTesting Rational and decimal input with method 2\n"
 ./rat_dectestm2 $1
 cd ../
 
+echo "\nTesting (d,d) dual cyclic polytopes for unique equilibrium\n"
+cd ./dualcyclic/dxd
+./dualcyclictest
+
 echo "\nTesting (d,d) dual cyclic polytopes with method 1\n"
 cd ./dualcyclic/dxd
 ./dualcyclictestm1

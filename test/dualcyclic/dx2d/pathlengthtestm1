@@ -5,19 +5,18 @@ do
     N=$((2*$M))
     F=$M"x"$N
     echo "Testing $F"
+    #Compute and get the path lengths for the pivots from the artificial equilibrium
+    ../../../inlh < $F | grep "Number of pivots: " | grep "Number of pivots: " -n | head -n "$(($M+$N))" > tmp
     for k in $(eval echo {1..$(($N+$M))})
     do
-        echo "Testing label $k: \c"
-        sed "s/k=.*/k=$k/" $F > tmp
-        mv tmp $F
-        ../../../inlh $2 < $F > tmp
-        cat sample-output tmp > tmp2
-        mv tmp2 sample-output
-        C=`egrep 'Number of pivots:' tmp | sed 's/Number of pivots:[ ]* \([0-9]*\)/\1/'`
-        #echo $C
+        echo -n "Testing label $k: "
+        C=`egrep "$k: Number of pivots:" tmp | sed 's/.* Number of pivots:[ ]* \([0-9]*\)/\1/' | head -n 1`
         G=`sed -n ''"$k,$k p"'' "$F"path | sed "s/.*length=\([0-9]*\)/\1/"`
         B=$(($G+3))
-        if [ $C -eq $B ]
+        D=$(($G+4))
+        T1=`[ $C -eq $B ]`
+        T2=`[ $C -eq $D ]`
+        if [ $T1 -o $T2 ]
             then
             echo "Passed"
         else

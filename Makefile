@@ -65,6 +65,7 @@ subdir:
 	cd path; $(MAKE)
 	cd test/identity/; $(MAKE)
 	cd test/dualcyclic/dxd/; $(MAKE)
+	cd test/invAB; $(MAKE)
 
 depend:: 
 	gcc -MM $(ALLOBJ:.o=.c) > $(DEPFILE)
@@ -75,6 +76,7 @@ cleansubdir:
 	cd path; $(MAKE) clean
 	cd test/identity/; $(MAKE) clean
 	cd test/dualcyclic/dxd/; $(MAKE) clean
+	cd test/invAB; $(MAKE) clean
 
 clean:
 	-rm -f *.o core *.exe $(DEPFILE); touch $(DEPFILE); make depend
