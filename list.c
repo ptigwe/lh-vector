@@ -1,7 +1,12 @@
-/*
-  * list.c
-  * A list of equilibrium.
-  * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+/**
+  * \file list.c
+  * A list of equilibrium. This is used to represent a group of
+  * equilibria, either the positively indexed equilibria or the
+  * negatively indexed equilibria. Nodes from one list are connected
+  * to the other list via their link variable, which enables the
+  * navigation of the bi-partite graph, of equilibria.
+  *
+  * Author: Tobenna Peter, Igwe  ptigwe@gmail.com  August, 2012
   *
   * Note: This file generates both list.o and glist.o,
   * to compile the file with gnump use the -DGLEMKE flag
@@ -103,7 +108,7 @@ int listlength(node* list)
 /* Computes the number of elements in the list */
 node* getNodeat(node* list, int n)
 {
-	if(n >= listlength(list))
+	if(n >= listlength(list) || n < 0)
 		return NULL;
 	
 	int i = 0;

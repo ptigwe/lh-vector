@@ -1,11 +1,18 @@
-/*
- * equilibrium.c
- * storing tableaus representing equilibrium, and computing the equilibrium
- * Author: Tobenna Peter, Igwe  ptigwe@gmail.com
+/**
+ * \file equilibrium.c
+ *
+ * Storing tableaus representing equilibrium, and computing the equilibrium.
+ * This structure is mainly used by the list (list.h) to store the bi-partite
+ * graph of equilibria found. The tableau information of the equilibrium is 
+ * stored, because the equilibrium can be computed from it, and if we want to
+ * restart from a given equilibrium, the tableau can simply be copied from this
+ * structure into the variables used for pivoting, initialised and the Lemke's
+ * algorithm runs to compute a new equilibrium.
+ *
+ * Author: Tobenna Peter, Igwe  ptigwe@gmail.com  August, 2012
  */
 
 #include "rat.h"
-#include "lemke.h"
 #include "equilibrium.h"
 
 

@@ -1,8 +1,12 @@
-/* lemke.c
-* 13 July 2000
-* LCP solver
-* Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
-*/
+/**
+ * \file lemke.c
+ * LCP solver
+ *
+ * 13 July 2000
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
+ *
+ * Edited: Tobenna Peter, Igwe   ptigwe@gmail.com  August, 2012
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,13 +16,11 @@
 
 #include "alloc.h"
 #include "col.h"
-#include "rat.h"
 
 #include "lemke.h"
 
 #include "mp.h"
 #include "equilibrium.h"
-#include "list.h"
 
 /* used for tableau:    */
 #define Z(i) (i)
@@ -43,23 +45,23 @@ Rat  *solz;
 int  pivotcount;
 
 /* tableau:    */
-static  mp **A;                 /* tableau                              */
-static  int *bascobas;          /* VARS  -> ROWCOL                      */
-static  int *whichvar;          /* ROWCOL -> VARS, inverse of bascobas  */
+static  mp **A;                 /**< tableau                              */
+static  int *bascobas;          /**< VARS  -> ROWCOL                      */
+static  int *whichvar;          /**< ROWCOL -> VARS, inverse of bascobas  */
 
-/* scale factors for variables z
+/** scale factors for variables z.
 * scfa[Z(0)]   for  d,  scfa[RHS] for  q
 * scfa[Z(1..n)] for cols of  M
 * result variables to be multiplied with these
 */
 static  mp *scfa;
 
-static  mp det;                         /* determinant                  */
+static  mp det;                         /**< determinant                  */
 
-static  int *lextested, *lexcomparisons;/* statistics for lexminvar     */
+static  int *lextested, *lexcomparisons;/**< statistics for lexminvar     */
 
 static  int *leavecand;
-    /* should be local to lexminvar but defined globally for economy    */
+    /**< should be local to lexminvar but defined globally for economy    */
 
 /* GSoC12: Tobenna Peter, Igwe */
 int nrows;
@@ -68,12 +70,17 @@ int k;
 int k2;
 Rat** payoffA;
 Rat** payoffB;
-mp** invAB; /* Represents the inverse of AB */
+mp** invAB; /**< Represents the inverse of AB */
 node* neg;  
 node* pos;
 
 
 /*------------------ error message ----------------*/
+/** 
+ * Prints out an error message and exits.
+ *
+ * \param info The error message 
+ */
 void errexit (char *info)
 {
     fflush(stdout);
@@ -86,6 +93,14 @@ void errexit (char *info)
 void assertbasic (int v, const char *info);
 
 /*------------------ memory allocation -------------------------*/
+/**
+ * Allocates memory for the LCP given its dimensions.
+ * If the LCP has been previously allocated, it frees the memory and
+ * reallocates it. If the dimension given for the LCP is < 0 or 
+ * > MAXLCPDIM then it exits with an error.
+ *
+ * \param newn The dimension of the LCP.
+ */
 void setlcp (int newn)
 {
     if (newn < 1 || newn > MAXLCPDIM)
@@ -137,11 +152,13 @@ void setlcp (int newn)
     T2ALLOC(invAB, n, n, mp);
 } /* end of  setlcp(newn)       */
 
-/* asserts that  d >= 0  and not  q >= 0  (o/w trivial sol) 
+/**
+* Checks that the values for q and d are valid.
+* Asserts that  d >= 0  and not  q >= 0  (o/w trivial sol) 
 * and that q[i] < 0  implies  d[i] > 0
 */
 /* GSoC12: Tobenna Peter, Igwe (Edited)*/
-    void isqdok (void)
+void isqdok (void)
 {
     int i;
     int isqpos = 1;
@@ -181,9 +198,11 @@ void setlcp (int newn)
 }       /* end of  isqdok()     */
 
 /* ------------------- tableau setup ------------------ */
+/** 
+ * Initialise tableau variables.
+ * Z(0)...Z(n)  nonbasic,  W(1)...W(n) basic    
+ */
 void inittablvars (void)
-        /* init tableau variables:                      */
-        /* Z(0)...Z(n)  nonbasic,  W(1)...W(n) basic    */
 {
     int i;
     for (i=0; i<=n; i++)
@@ -198,9 +217,11 @@ void inittablvars (void)
     }
 }       /* end of inittablvars()        */
 
+/**
+ * Fill tableau from  M, q, d
+ */
 /* GSoC12: Tobenna Peter, Igwe (Edited)*/
 void filltableau (void)
-        /* fill tableau from  M, q, d   */
 {
     int i,j;
     mp den, num;
@@ -279,6 +300,9 @@ void filltableau (void)
 }       /* end of filltableau()         */
 
 /* ---------------- output routines ------------------- */
+/**
+ * Prints the LCP to the standard output
+ */
 void outlcp (void)
         /* output the LCP as given      */
 {
@@ -314,9 +338,14 @@ void outlcp (void)
     colout();
 }
 
+/**
+ * Create a string s representing v in VARS, e.g. "w2"
+ *
+ * \param v Variable to be converted
+ * \param s String to be created
+ * \returns length of string s
+ */
 int vartoa(int v, char s[])
-        /* create string  s  representing  v  in  VARS,  e.g. "w2"    */
-        /* return value is length of that string                      */
 {
     if (v > n)
         return sprintf(s, "w%d", v-n);
@@ -324,9 +353,10 @@ int vartoa(int v, char s[])
         return sprintf(s, "z%d", v);
 }
 
-
+/**
+ * Output the current tableau, column-adjusted
+ */
 void outtabl (void)
-        /* output the current tableau, column-adjusted                  */
 {
     int i, j;
     char s[INFOSTRINGLENGTH];
@@ -375,7 +405,9 @@ void outtabl (void)
     printf("-----------------end of tableau-----------------\n");
 }       /* end of  outtabl()                                    */
 
-/* output the current basic solution            */
+/**
+ * Output the current basic solution 
+ */
 void outsol (void)
 {
     char s[INFOSTRINGLENGTH];
@@ -433,11 +465,12 @@ void outsol (void)
     printf("\n Number of pivots: %d\n", pivotcount);
 }       /* end of outsol                */
 
-/* current basic solution turned into  solz [0..n-1]
-* note that Z(1)..Z(n)  become indices  0..n-1
-* gives a warning if conversion to ordinary rational fails
-* and returns 1, otherwise 0
-*/
+/**
+ * Current basic solution turned into  solz [0..n-1].
+ * Note that Z(1)..Z(n)  become indices  0..n-1.
+ *
+ * \returns 0
+ */
  /* GSoC12: Tobenna Peter, Igwe (Edited)*/
 Bool notokcopysol (void)
 {
@@ -446,7 +479,7 @@ Bool notokcopysol (void)
     mp num, den;
 
     for (i=1; i<=n; i++) 
-        if ( (row = bascobas[i]) < n)  /*  i  is a basic variable */
+    if ( (row = bascobas[i]) < n)  /*  i  is a basic variable */
     {
             /* value of  Z(i):  scfa[Z(i)]*rhs[row] / (scfa[RHS]*det)   */
         mulint(scfa[Z(i)], A[row][RHS], num);
@@ -472,8 +505,13 @@ Bool notokcopysol (void)
 } /* end of copysol                     */
 
 /* --------------- test output and exception routines ---------------- */  
-/* assert that  v  in VARS is a basic variable         */
-/* otherwise error printing  info  where               */     
+/**
+ * Assert that  v  in VARS is a basic variable.
+ * If v is not basic, then the program terminates with an error message
+ *
+ * \param v    The variable to be asserted
+ * \param info Part of the error message.
+ */     
 void assertbasic (int v, const char *info)
 {
     char s[INFOSTRINGLENGTH];
@@ -485,8 +523,13 @@ void assertbasic (int v, const char *info)
     }
 }
 
-/* assert that  v  in VARS is a cobasic variable       */
-/* otherwise error printing  info  where               */
+/**
+ * Assert that  v  in VARS is a cobasic variable.
+ * If v is not cobasic, the program terminates with an error message
+ *
+ * \param v     The variable to be asserted
+ * \param info  Part of the error message
+ */
 void assertcobasic (int v, char *info)
 {
     char s[INFOSTRINGLENGTH];
@@ -498,8 +541,14 @@ void assertcobasic (int v, char *info)
     }
 }
 
-/* leave, enter in  VARS.  Documents the current pivot. */
-/* Asserts  leave  is basic and  enter is cobasic.      */
+/**
+ * Document the current pivot.
+ * Asserts  leave  is basic and  enter is cobasic, and
+ * print the current pivot
+ *
+ * \param leave The leaving variable
+ * \param enter The entering variable
+ */
 void docupivot (leave, enter)
 {
     char s[INFOSTRINGLENGTH];
@@ -513,6 +562,12 @@ void docupivot (leave, enter)
     printf("entering: %s\n", s);
 }       /* end of  docupivot    */
 
+/**
+ * Outputs an error message and exits when a ray termination
+ * occurs while trying to pivot in the entering variable.
+ *
+ * \param enter The entering variable.
+ */
 void raytermination (int enter)
 {
     char s[INFOSTRINGLENGTH];
@@ -524,7 +579,10 @@ void raytermination (int enter)
     errexit("");
 }
 
-/* test tableau variables: error => msg only, continue  */
+/**
+ * Tests the tableau variables. If the tableau variables are wrong,
+ * output error and continue.
+ */
 void testtablvars(void)
 {
     int i, j;
@@ -546,18 +604,23 @@ void testtablvars(void)
 
 /* --------------- pivoting and related routines -------------- */
 
-/* complement of  v  in VARS, error if  v==Z(0).
-* this is  W(i) for Z(i)  and vice versa, i=1...n
-*/
-    int complement (int v)
+/**
+ * Complement of  v  in VARS. Error if  v==Z(0).
+ * This is  W(i) for Z(i)  and vice versa, i=1...n.
+ *
+ * \param v The variable
+ * \returns The complement of v. Z(i) if v is W(i) and vice versa.
+ */
+int complement (int v)
 {
     if (v==Z(0))
         errexit("Attempt to find complement of z0.");
     return (v > n) ? Z(v-n) : W(v) ;
 }       /* end of  complement (v)     */
 
-/* initialize statistics for minimum ratio test
-*/
+/**
+ * Initialize statistics for minimum ratio test
+ */
 void initstatistics(void)
 {
     int i;
@@ -565,8 +628,9 @@ void initstatistics(void)
         lextested[i] = lexcomparisons[i] = 0;
 }
 
-/* output statistics of minimum ratio test
-*/
+/**
+ * Output statistics of minimum ratio test
+ */
 void outstatistics(void)
 {
     int i;
@@ -607,13 +671,18 @@ void outstatistics(void)
     colout();
 }
 
-/* returns the leaving variable in  VARS, given by lexmin row, 
-* when  enter  in VARS is entering variable
-* only positive entries of entering column tested
-* boolean  *z0leave  indicates back that  z0  can leave the
-* basis, but the lex-minratio test is performed fully,
-* so the returned value might not be the index of  z0
-*/
+/**
+ * Returns the leaving variable in  VARS. This is given by lexmin row, 
+ * when  enter  in VARS is entering variable
+ * only positive entries of entering column tested
+ * boolean  *z0leave  indicates back that  z0  can leave the
+ * basis, but the lex-minratio test is performed fully,
+ * so the returned value might not be the index of  z0.
+ *
+ * \param enter   The entering variable
+ * \param z0leave Stores a boolean value stating if z0 can leave.
+ * \returns       The leaving variable
+ */
 int lexminvar (int enter, int *z0leave)
 {                                                       
     int col, i, j, testcol;
@@ -694,14 +763,18 @@ int lexminvar (int enter, int *z0leave)
     return whichvar[leavecand[0]];
 }       /* end of lexminvar (col, *z0leave);                        */
 
-
-/* returns the leaving variable in  VARS  as entered by user,
-* when  enter  in VARS is entering variable
-* only nonzero entries of entering column admitted
-* boolean  *z0leave  indicates back that  z0  has been
-* entered as leaving variable, and then
-* the returned value is the index of  z0
-*/
+/**
+ * Returns the leaving variable in  VARS  as entered by user.
+ * When  enter  in VARS is entering variable
+ * only nonzero entries of entering column admitted
+ * boolean  *z0leave  indicates back that  z0  has been
+ * entered as leaving variable, and then
+ * the returned value is the index of  z0.
+ *
+ * \param enter   The entering variable
+ * \param z0leave Stores a boolean value stating if z0 can leave.
+ * \returns       The leaving variable
+ */
 int interactivevar (int enter, int *z0leave)
 {                                                       
     char s[INFOSTRINGLENGTH], instring[2];
@@ -774,16 +847,22 @@ int interactivevar (int enter, int *z0leave)
     return var;
 }   /* end of  interactivevar (col, *z0leave);          */
 
+/**
+ * Negates tableau column  col
+ * \param col The column of the tableau to be negated.
+ */
 void negcol(int col)
-        /* negate tableau column  col   */
 {
     int i;
     for (i=0; i<n; i++)
         changesign(A[i][col]);
 }
 
+/**
+ * Negate tableau row.  Used in  pivot().
+ * \param row The row of the tableau to be negated.
+ */
 void negrow(int row)
-        /* negate tableau row.  Used in  pivot()        */
 {
     int j;
     for (j=0; j<=n+1; j++)
@@ -791,11 +870,16 @@ void negrow(int row)
         changesign(A[row][j]);
 }
 
-/* leave, enter in  VARS  defining  row, col  of  A
-* pivot tableau on the element  A[row][col] which must be nonzero
-* afterwards tableau normalized with positive determinant
-* and updated tableau variables
-*/
+/**
+ * Pivots the tableau given the entering and leaving variable.
+ * leave, enter in  VARS  defining  row, col  of  A
+ * pivot tableau on the element  A[row][col] which must be nonzero
+ * afterwards tableau normalized with positive determinant
+ * and updated tableau variables
+ *
+ * \param leave The leaving variable
+ * \param enter The entering variable
+ */
 void pivot (int leave, int enter)
 {
     int row, col, i, j;
@@ -840,9 +924,12 @@ void pivot (int leave, int enter)
     bascobas[enter] = row;          whichvar[row]   = enter;
 }       /* end of  pivot (leave, enter)                         */
 
-/* Returns the best response of strategy l where
-* 1 <= l <= m+n
-*/
+/**
+ * Returns the best response of a given strategy.
+ * 
+ * \param l A players strategy such that 1 <= l <= m+n
+ * \returns The opponents best response strategy
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 int bestResponse(int l)
 {
@@ -872,9 +959,14 @@ int bestResponse(int l)
     return m;
 }
 
-/* Pivots the tableau given the values for the leaving
+/**
+* Pivots the tableau given the values for the leaving
 * and entering variables, and outputs data based on the
 * flags.
+*
+* \param leave The leaving variable
+* \param enter The entering variable
+* \param flags The flags for running Lemke's algorithm
 */
 /* GSoC12: Tobenna Peter, Igwe */
 void fpivot(int leave, int enter, Flagsrunlemke flags)
@@ -888,11 +980,12 @@ void fpivot(int leave, int enter, Flagsrunlemke flags)
     pivotcount++;
 }
 
-/* Initialise the LH algorithm with the first
-* three pivots of method 1 as explained in the report.
-*/
+/**
+ * Initialise the LH algorithm with the first
+ * three pivots of method 1 as explained in the report.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
-    int initLH1(Flagsrunlemke flags)
+int initLH1(Flagsrunlemke flags)
 {
     int enter, leave;
 
@@ -914,11 +1007,12 @@ void fpivot(int leave, int enter, Flagsrunlemke flags)
     return leave;
 }
 
-/* Initialise the LH algorithm with the first
-* three pivots of method 1 as explained in the report.
-*/
+/**
+ * Initialise the LH algorithm with the first
+ * three pivots of method 1 as explained in the report.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
-    int initLH2(Flagsrunlemke flags)
+int initLH2(Flagsrunlemke flags)
 {
     int enter, leave;
 
@@ -945,7 +1039,13 @@ void fpivot(int leave, int enter, Flagsrunlemke flags)
     return leave;
 }
 
-/* Initialise the LH pivots given the flags */
+/**
+ * Initialise the LH pivots given the flags.
+ * It chooses to initialise the LH pivots using either
+ * method 1 or 2 as specified by the user in flags.
+ *
+ * \param flags The flags for running Lemke's algorithm
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 int initLH(Flagsrunlemke flags)
 {
@@ -955,7 +1055,9 @@ int initLH(Flagsrunlemke flags)
         return Z(0);
 }
 
-/* Computes the inverse of A_B */
+/**
+ * Computes the inverse of A_B.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 void getinvAB(int verbose)
 {
@@ -1020,7 +1122,7 @@ void getinvAB(int verbose)
     }
 }
 
-/* ------------------------------------------------------------ */ 
+/* ------------------------------------------------------------ */
 /* GSoC12: Tobenna Peter, Igwe (Edited)*/
 void runlemke(Flagsrunlemke flags)
 {
@@ -1091,8 +1193,10 @@ void runlemke(Flagsrunlemke flags)
         getinvAB(flags.boutinvAB);
 }
 
-/* Copy the tableau from the given equilibrium to be
-* used for computation */
+/**
+ * Copy the tableau from the given equilibrium to be
+ * used for computation.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 void copyEquilibrium(Equilibrium eq)
 {
@@ -1118,7 +1222,12 @@ void copyEquilibrium(Equilibrium eq)
     copy(det, eq.det);
 }
 
-/* Setup the covering vector for the Artificial Equilibrium */
+/**
+ * Setup the covering vector for the Artificial Equilibrium.
+ * Calculates the new covering vector for the missing label k
+ * from the artificial equilibrium, and substitutes that in the 
+ * tableau.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 void setupArtificial()
 {
@@ -1139,7 +1248,11 @@ void setupArtificial()
     }
 }
 
-/* Setup the tableau from the current equilibrium using k2 as the missing label */
+/**
+ * Setup the tableau from the current equilibrium using k2 as the missing label.
+ * This involves calculating the inverse of A_B to find the new covering vector,
+ * and replacing it in the tableau.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 void setupEquilibrium(Flagsrunlemke flags)
 {	
@@ -1161,7 +1274,7 @@ void setupEquilibrium(Flagsrunlemke flags)
 
     /* sol represents the computed covering vector by multiplying
     * invAB with vecd2, and multiplying the result by -1 */
-        mp* sol = TALLOC(n, mp);
+    mp* sol = TALLOC(n, mp);
     for(i = 0; i < n; ++i)
     {
         int j;
@@ -1189,7 +1302,17 @@ void setupEquilibrium(Flagsrunlemke flags)
     printf("\nRestarting with missing label: %d\n", k2);
 }
 
-/* Compute the equilibria from the specified node */
+/**
+ * Compute the equilibria from the specified node.
+ * This computes all the equiibria directly reachable by
+ * dropping labels which do not have any equilibrium linked
+ * with from the current equilibrium.
+ *
+ * \param i     Index position of the current equilibrium in the list
+ * \param isneg Boolean value indicating if the current equilibrium is
+ *              a negatively indexed equilibrium.
+ * \param flags Flags for tunning Lemke's algorithm.
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
 {
@@ -1218,7 +1341,9 @@ void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
     }
 }
 
-/* Compute all equilibrium */
+/**
+ * Compute all equilibrium 
+ */
 /* GSoC12: Tobenna Peter, Igwe */
 void computeEquilibria(Flagsrunlemke flags)
 {

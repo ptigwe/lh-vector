@@ -1,33 +1,49 @@
-/* col.h                                                        */
-/* automatic pretty printing in columns                         */
-/* 17 Apr 2000                                                  */
-/* Author: Bernhard von Stengel  stengel@maths.lse.ac.uk      */
+/** \file col.h
+ * Automatic pretty printing in columns.
+ * 
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk   17 Apr 2000
+ */
 
-/* no of bytes of buffer to print into.  Buffer will be 
+/** 
+ * Number of bytes of buffer to print into.  Buffer will be 
  * printed and flushed if full (not assumed to happen),
  * suffices for one page of text  
  */
 #define COLBUFSIZE 30000  
-#define ISTR 20 	/* no of bytes to print an integer      */
+#define ISTR 20 	/**< Number of bytes to print an integer      */
 
-/* resetting buffer with  c  columns
- * is assumed to be called before all other routines
+/** 
+ * Resetting buffer with c columns.
+ * This method is assumed to be called before all other routines.
+ *
+ * \param c The number of columns to be printed out
  */
 void colset(int c);
 
-/* print integer i  into the current column                     */
+/** 
+ * Print integer into the current column
+ *
+ * \param i The integer to be printed out
+ */
 void colipr(int i);
 
-/* making column  c  in  0..ncols-1  left-adjusted              */
+/** 
+ * Making column c left-adjusted
+ *
+ * \param c  index of column in range 0..ncols-1  
+ */
 void colleft(int c);
 
-/* terminate current line early.  blank line if in col  0       */
+/** Terminate current line early, prints blank line if in col  0 */
 void colnl(void);
 
-/* print out the current buffer, without flushing               */
+/** Print out the current buffer, without flushing               */
 void colout(void);
 
-/* store string  s  into the current column,
- * updating column width
+/** 
+ * Store string into the current column.
+ * The column width is updated after printing the string.
+ *
+ * \param s The string to be printed out.
  */
 void colpr(const char *s);

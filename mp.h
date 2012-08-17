@@ -1,4 +1,5 @@
-/* mp.h
+/**
+ * \file mp.h
  * 13 July 2000
  * multiprecision routines taken from  lrs 
  * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
@@ -126,41 +127,41 @@ int mptoi(mp a, int *result, int bcomplain) ;
 /******************************************************* */
 
 void atoaa(char in[], char num[], char den[]); 
-	/* convert rational string in to num/den strings               */
+	/**< convert rational string in to num/den strings               */
 void atomp(char s[], mp a);         
-	/* convert string to mp integer                                */
+	/**< convert string to mp integer                                */
 long comprod(mp Na,mp Nb,mp Nc,mp Nd);         
-	/* +1 if Na*Nb > Nc*Nd, -1 if Na*Nb < Nc*Nd else 0             */
+	/**< +1 if Na*Nb > Nc*Nd, -1 if Na*Nb < Nc*Nd else 0             */
 void copy(mp a, mp b);              
-	/* assigns a=b                                                 */
+	/**< assigns a=b                                                 */
 void divint(mp a, mp b, mp c );      
-	/* c=a/b, a contains remainder on return                       */
+	/**< c=a/b, a contains remainder on return                       */
 void gcd(mp u, mp v);               
-	/* returns u=gcd(u,v) destroying v                             */
+	/**< returns u=gcd(u,v) destroying v                             */
 long greater(mp a, mp b);           
-	/* tests if a > b and returns (TRUE=POS)                       */
+	/**< tests if a > b and returns (TRUE=POS)                       */
 void itomp(long in, mp a);                     
-	/* convert integer i to multiple precision with base BASE      */
+	/**< convert integer i to multiple precision with base BASE      */
 void linint(mp a,long ka,mp b,long kb);        
-	/* compute a*ka+b*kb --> a                                     */
+	/**< compute a*ka+b*kb --> a                                     */
 void lcm(mp a, mp b);                          
-	/* a = least common multiple of a, b; b is preserved           */
+	/**< a = least common multiple of a, b; b is preserved           */
 int mptoa(mp a, char s[]);         
-	/* convert mp integer to string, return length                 */
+	/**< convert mp integer to string, return length                 */
 void mulint(mp a,mp b,mp c);                   
-	/* multiply two integers a*b --> c                             */
+	/**< multiply two integers a*b --> c                             */
 void normalize(mp a);              
-	/* normalize mp after computation                              */
+	/**< normalize mp after computation                              */
 void pmp(char name[],mp a);                    
-	/* print the long precision integer a                          */
+	/**< print the long precision integer a                          */
 void prat(char name[],mp Nt,mp Dt);            
-	/* print the long precision rational Nt/Dt                     */
+	/**< print the long precision rational Nt/Dt                     */
 void readmp(mp a) ;                            
-	/* read an integer and convert to mp with base BASE            */
+	/**< read an integer and convert to mp with base BASE            */
 long readrat(mp Na, mp Da);                    
-	/* read a rational or integer and convert to mp with base BASE */
+	/**< read a rational or integer and convert to mp with base BASE */
 void reduce(mp Na,mp Da);          
-	/* reduces Na Da by gcd(Na,Da)                                 */
+	/**< reduces Na Da by gcd(Na,Da)                                 */
 
 void digits_overflow();
 

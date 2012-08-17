@@ -61,6 +61,9 @@ inlemke: $(INLEMKE)
 inglemke: $(INGLEMKE)
 	$(CC) -D GLEMKE $(CFLAGS) $(INGLEMKE) $(GMP) -o inlemke 
 
+doc: Doxyfile
+	doxygen
+
 subdir:
 	cd path; $(MAKE)
 	cd test/identity/; $(MAKE)
@@ -70,7 +73,7 @@ subdir:
 depend:: 
 	gcc -MM $(ALLOBJ:.o=.c) > $(DEPFILE)
 
-.PHONY : clean cleansubdir
+.PHONY : clean cleansubdir doc
 
 cleansubdir:
 	cd path; $(MAKE) clean
@@ -79,6 +82,6 @@ cleansubdir:
 	cd test/invAB; $(MAKE) clean
 
 clean:
-	-rm -f *.o core *.exe $(DEPFILE); touch $(DEPFILE); make depend
+	-rm -rf doc *.o core *.exe $(DEPFILE); touch $(DEPFILE); make depend
 
 include $(DEPFILE)

@@ -1,7 +1,8 @@
-/* alloc.h
- * 17 Apr 2000
- * memory allocation with error output if fails
- * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
+/** 
+ * \file alloc.c
+ * Memory allocation with error output if fails.
+ *
+ * Author: Bernhard von Stengel  stengel@maths.lse.ac.uk 17 Apr 2000
  */
 
 #include <stdio.h>

@@ -1,11 +1,100 @@
-/* inlemke.c
-* Lemke direct
-* 16 Apr 2000
-* options:
-*      -i      run pivoting interactively, suggested with  '-v'
-*      -v      verbose: output tableau at every pivoting step
-* Author: Bernhard von Stengel  stengel@maths.lse.ac.uk
-*/
+/**
+ * \mainpage Lemke-Howson with Covering Vectors
+ *
+ * ##Download##
+ * The source from this project can be gotten from the repository
+ * http://www.github.com/ptigwe/lh-vector
+ *
+ * ##Compile##
+ * The program has been written to be compiled with GNUMP, a multiple
+ * point integer precision library, but this requires the library to
+ * be installed for the program to compile successfully. An alternative
+ * for the GNUMP has been provided along with the code in the files
+ * mp.h and mp.c. It is suggested to use the GNUMP version of the code,
+ * as it supports integers of arbitrary length, where as the mp.h version
+ * supports integers of a fixed number of digits. Due to the two different
+ * representations of multiple point precision integers, some code which
+ * depends on the definition of these integers have two different files,
+ * one which supports the GNUMP format, and a second which supports the 
+ * mp format, for example for the main Lemke code defined in lemke.h,
+ * the implementation is in glemke.c supports the GNUMP format, and the
+ * lemke.c supports the mp format.
+ *
+ * To compile the code using the GNUMP format, the make rule 'inglh' is
+ * used, and for compilation using the mp format the make rule 'inlh' is
+ * used.
+ * 
+ * ###Rules:###
+ * - 'make inlh': Compiles the code with mp support
+ * - 'make inglh': Compiles the code with GNUMP support
+ * - 'make subdir': Compiles the code for running tests
+ *
+ *
+ * ##Running##
+ * ./inlh [-aiI:f:vm]
+ *
+ * ###Flags:###
+ * - '-a' Print out the value of invAB for every equilibrium once its being
+ *    found.
+ * - '-i' Allows for the user to specify the leaving variable at each point
+ *      while pivoting. Suggest using -v whenever using -i.
+ * - '-I n' Allows the user to specify the maximum number of interactive pivots n
+ *        which the user is allowed to enter. Once the user enters the first n
+ *        leaving variables, the program completes the remaining until it finds
+ *        an equilibrium, this happens for every missing label being tested at a
+ *        given equilibrium. n <= 0 is equivalent to -i flag.
+ * - '-f filename' Prints out the equivalent LCP for the game input into filename
+ * - '-v'  For a verbose output, which output the tableau information after every pivot
+ * - '-m'  By default methpd 1 for initialising the LH-path is used, this flag sets
+ *       method 2 to be used for initialisation.
+ * 
+ * ###Input:###
+ * The program takes its input in the following format:
+ *
+ * m= ?
+ *
+ * n= ?
+ *
+ * A= ? 
+ *
+ * B= ?
+ *
+ * where m is the number of rows,
+ * n is the number of columns,
+ * A is the first players payoff matrix and
+ * B is the second players payoff matrix
+ */
+/**
+ * \file inlemkehowson.c
+ *
+ * Lemke Howson main file.
+ * This file serves as the starting point for the program, and ties
+ * everything together.
+ * 
+ * ./inlh [-aiI:f:vm]
+ *
+ * ###Flags:###
+ * '-a' Print out the value of invAB for every equilibrium once its being
+ *    found.
+ *
+ * '-i' Allows for the user to specify the leaving variable at each point
+ *      while pivoting. Suggest using -v whenever using -i.
+ *
+ * '-I n' Allows the user to specify the maximum number of interactive pivots n
+ *        which the user is allowed to enter. Once the user enters the first n
+ *        leaving variables, the program completes the remaining until it finds
+ *        an equilibrium, this happens for every missing label being tested at a
+ *        given equilibrium. n <= 0 is equivalent to -i flag.
+ *
+ * '-f filename' Prints out the equivalent LCP for the game input into filename
+ *
+ * '-v'  For a verbose output, which output the tableau information after every pivot
+ *
+ * '-m'  By default methpd 1 for initialising the LH-path is used, this flag sets
+ *       method 2 to be used for initialisation.
+ *
+ * Author:Tobenna Peter, Igwe  ptigwe@gmail.com  August, 2012
+ */
 
 #include <math.h>
 #include <ctype.h>
@@ -24,19 +113,25 @@
 #include "lemke.h"
        /* for lemke.h  */ 
 
-static int n; 	/* LCP dimension here */
+static int n; 	/**< LCP dimension */
 
-int m, n1;
+int m;  /**< Number of rows in input matrix */
+int n1; /**< Number of columns in input matrix */
 
-FILE* lcpout; /* File to store the equivalent LCP */
+FILE* lcpout; /**< File to store the equivalent LCP */
 
-/* max no of characters + 1 (for terminating '\0') 
+/** max no of characters + 1 (for terminating '\0') 
 * of a string  s  declared as  char s[MAXSTR] 
 * to be read from stdin by readstr
 */
 #define MAXSTR 100  
 
 /*------------------ error message ----------------*/
+/**
+ * Prints out a message and exits the program.
+ *
+ * \param info A string containing the error message.
+ */
 void notimpl (char *info)
 {
     fflush(stdout);
@@ -45,10 +140,15 @@ void notimpl (char *info)
 }
 
 /*------------------ read-in routines --------------------------*/
-/* reads string  s  from stdin, to fit  char s[MAXSTR]
-* if length >= MAXSTR-1  a warning is sent to stderr
-* returns EOF if EOF encountered, then  s  undefined
-*/
+/** 
+ * Reads in a string from the standard input.
+ * Reads string  s  from stdin, to fit  char s[MAXSTR]
+ * if length >= MAXSTR-1  a warning is sent to stderr
+ * returns EOF if EOF encountered, then  s  undefined.
+ *
+ * \param s The string to be read in to from the stdin
+ * \returns EOF if EOF was encountered otherwise same return value as scanf
+ */
 int readstr (char *s)        
 {
     int tmp;
@@ -64,10 +164,14 @@ int readstr (char *s)
     return tmp;     /* is EOF if scanf encounters EOF               */
 }
 
-/* s  is a string of nonblank chars, which have to
-* match in that order the next nonblank  stdin  chars
-* readconf  complains and terminates if not
-*/
+/** 
+ * Reads in a specific string.
+ * The input string is a string of nonblank chars which have to
+ * match in that order the next nonblank  stdin  chars otherwise
+ * readconf  complains and terminates.
+ *
+ * \param s The string to be read and matched
+ */
 void readconf (const char *s)
 {
     int i, len = strlen(s);
@@ -87,11 +191,14 @@ void readconf (const char *s)
     }
 }
 
-/* reads  n  rationals into the array  v  of rationals 
-* terminates with error if EOF encountered earlier
-* info  denotes name of array for error information
-* array indices in error info called  1...n
-*/
+/**
+ * Reads n rationals into the array of rationals. 
+ * Terminates with error if EOF encountered earlier.
+ * Array indices in error info called  1...n
+ *
+ * \param v     The array the ratinoals should be stored in
+ * \param info  denotes name of array for error information
+ */
 void readnrats (Rat *v, const char *info)
 {
     char srat[MAXSTR];
@@ -109,22 +216,32 @@ void readnrats (Rat *v, const char *info)
     } 
 }   /* end of readnrats  */
 
-/* Allocate memory for the matrices */
+/** 
+ * Allocate memory for the payoff matrices.
+ *
+ * \param m Number of rows in the payoff matrix
+ * \param n Number of columns in the payoff matrix
+ */
 void setmatrices(int m, int n)
 {
     T2ALLOC(payoffA, m, n, Rat);
     T2ALLOC(payoffB, m, n, Rat);
 }
 
-/* Free the memory for the matrices */
+/**
+ * Free the memory used by the payoff matrices
+ *
+ * \param m Number of rows in the payoff matrix
+ */
 void freematrices(int m)
 {
     FREE2(payoffA, m);
     FREE2(payoffB, m);
 }
 
-/* Read matrices A and B */
-/* GSoC12: Tobenna Peter, Igwe */
+/** 
+ * Read the payoff Matrices A and B from the standard input.
+ */
 void readMatrices()
 {
     /* read in  M   */
@@ -150,9 +267,11 @@ void readMatrices()
     }
 }
 
-/* Read the game input */
-/* GSoC12: Tobenna Peter, Igwe */
-void readGame (void)
+/**
+ * Reads the game input. This includes the size of the game,
+ * and the two payoff matrices.
+ */
+void readGame ()
         /* reads LCP data  n, M, q, d  from stdin       */
 {
     /* get problem dimension */
@@ -165,8 +284,16 @@ void readGame (void)
     readMatrices();
 }       /* end of reading in LCP data   */
 
-/* Calculate the complement (-mat) of the matrix given the maximum */
-/* GSoC12: Tobenna Peter, Igwe */
+/**
+ * Calculate the complement (-mat) of the matrix given the maximum of
+ * the matrix. This computation is done as mat[i][j] = -(mat[i][j] - rat).
+ *
+ * \param mat The matrix to be complemented
+ * \param rat The ceiling of the maximum value of the matrix (rat = ceil(max(mat))).
+ *            If max(mat) is an integer, then 1 is added to the computed value of rat.
+ * \param m   The number of rows in mat
+ * \param n   The number of columns in mat
+ */
 void complementMatrix(Rat** mat, Rat rat, int m, int n)
 {
     int i;
@@ -181,8 +308,9 @@ void complementMatrix(Rat** mat, Rat rat, int m, int n)
     }
 }
 
-/* Convert the matrices to the LCP matrix M */
-/* GSoC12: Tobenna Peter, Igwe */
+/**
+ * Convert the matrices to the LCP matrix M. 
+ */
 void convertlcpM()
 {	
     n = m+n1+2;
@@ -250,8 +378,9 @@ void convertlcpM()
     }
 }
 
-/* Computes the LCP q vector (i.e. RHS) */
-/* GSoC12: Tobenna Peter, Igwe */
+/**
+ * Computes the LCP q vector
+ */
 void convertq()
 {
     rhsq[0] = rhsq[1] = ratfromi(-1);
@@ -262,8 +391,9 @@ void convertq()
     }
 }
 
-/* Compute the value of LCP d-vector */
-/* GSoC12: Tobenna Peter, Igwe */
+/**
+ * Compute the value of LCP d-vector
+ */
 void convertd()
 {
     int i;
@@ -280,8 +410,9 @@ void convertd()
     }
 }
 
-/* Prints the lcpM to the output file */
-/* GSoC12: Tobenna Peter, Igwe */
+/** 
+ * Prints the lcpM to the output file lcpout
+ */
 void printlcpM()
 {
     fprintf(lcpout, "n= %d\nM=\n", n);
@@ -299,8 +430,9 @@ void printlcpM()
     }
 }
 
-/* Prints the RHS to the output file */
-/* GSoC12: Tobenna Peter, Igwe */
+/** 
+ * Prints the RHS to the output file lcpout
+ */
 void printlcpq()
 {
     fprintf(lcpout, "q= ");
@@ -313,8 +445,9 @@ void printlcpq()
     }
 }
 
-/* Prints the vecd to the output file */
-/* GSoC12: Tobenna Peter, Igwe */
+/** 
+ * Prints the vecd to the output file lcpout
+ */
 void printlcpd()
 {
     fprintf(lcpout, "\nd= ");
@@ -327,8 +460,9 @@ void printlcpd()
     }
 }
 
-/* Prints the LCP to the output file */
-/* GSoC12: Tobenna Peter, Igwe */
+/** 
+ * Prints the LCP to the output file lcpout 
+ */
 void printLCP()
 {
     printlcpM();
@@ -337,8 +471,9 @@ void printLCP()
     fclose(lcpout);
 }
 
-/* Converts the game to an equivalent LCP */
-/* GSoC12: Tobenna Peter, Igwe */
+/** 
+ * Converts the game to an equivalent LCP.
+ */
 void convert()
 {	
     /* Find the value of -A and -B using the method
@@ -364,7 +499,13 @@ void convert()
 }
 
 /* ---------------------- main ------------------------ */  
-/* GSoC12: Tobenna Peter, Igwe (EDITED) */     
+/**
+ * The main program.
+ * Reads in arguments from argv, and sets the flags for the
+ * Lemke-Howson algorithim accordingly. Reads the game from
+ * stdin, converts it to an equivalent LCP, and computes all
+ * reachable Nash Equilibria.
+ */
 int main(int argc, char *argv[])
 {
     int c;
@@ -386,23 +527,23 @@ int main(int argc, char *argv[])
     while ( (c = getopt (argc, argv, "if:vI:ma")) != -1)
         switch (c)
         {
-            case 'a':/* GSOC*/
+            case 'a':
                 flags.boutinvAB = 1;
                 break;
-            case 'I':/* GSOC*/
+            case 'I':
                 flags.interactcount = atoi(optarg);
             case 'i':
                 flags.binteract  = 1;
                 printf("Interactive flag set.\n");
                 break;
-            case 'f':/* GSOC*/
+            case 'f':
                 lcpout = fopen(optarg, "w+");
                 break;
             case 'v':
                 flags.bouttabl   = 1;
                 printf("Verbose tableau output.\n");
                 break;
-            case 'm':/* GSOC*/
+            case 'm':
                 flags.binitmethod = 0;
                 break;
             case '?':

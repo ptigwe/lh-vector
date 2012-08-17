@@ -1,7 +1,11 @@
-/* grat.c 
-* computing with rationals
-* Author: Tobenna Peter, Igwe  ptigwe@gmail.com
-*/
+/** \file grat.c 
+ *
+ * For the computation of rational numbers. The grat.c file
+ * contains the implementation of the methods defined in rat.h
+ * which use gmp.
+ *
+ * Author: Tobenna Peter, Igwe   ptigwe@gmail.com August 2012.
+ */
 
 #define GLEMKE
 
