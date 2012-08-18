@@ -1381,7 +1381,15 @@ void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
             continue;
 
         copyEquilibrium(cur->eq);
-        setupEquilibrium(flags);
+        if(flags.bisArtificial)
+        {
+            k = k2;
+            setupArtificial();
+        }
+        else
+        {
+            setupEquilibrium(flags);
+        }
         runlemke(flags);
         /* Create the equilibrium and add it to the list */
         eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
@@ -1426,22 +1434,8 @@ void computeEquilibria(Flagsrunlemke flags)
     neg->link[0] = 0;
     pos->link[0] = 0;
     /* All labels for the artificial equilibrium */
-    for(k = 2; k <= maxk; ++k)
-    {
-        /* Restart from the artificial equilibrium with k as the missing label */
-        copyEquilibrium(neg->eq);
-        setupArtificial();
-        runlemke(flags);
-
-        /* Create the equilibrium and add it to the list */
-        eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
-        /* The equilibrium is at the index j in the list */
-        int j = addEquilibrium(pos, eq);
-        /* Label k links both equilibria together */
-        neg->link[k-1] = j;
-        node* p = getNodeat(pos, j);
-        p->link[k-1] = 0;
-    }
+    
+    computeEquilibriafromnode(0, 1, flags);
 
     flags.bisArtificial = 0;
     negi = 1;
