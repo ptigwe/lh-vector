@@ -96,7 +96,7 @@ void errexit (char *info)
 }
 
 /* declares */
-void assertbasic (int v, const char *info);
+int assertbasic (int v, const char *info);
 
 /*------------------ memory allocation -------------------------*/
 /**
@@ -538,15 +538,17 @@ Bool notokcopysol (void)
  * \param v    The variable to be asserted
  * \param info Part of the error message.
  */    
-void assertbasic (int v, const char *info)
+int assertbasic (int v, const char *info)
 {
     char s[INFOSTRINGLENGTH];
     if (bascobas[v] >= n)   
     {
         vartoa(v, s);
         fprintf(stderr, "%s: Cobasic variable %s should be basic.\n", info, s);
-        errexit("");
+        /*errexit("");*/
+        return -1;
     }
+    return 0;
 }
 
 /**
@@ -556,15 +558,17 @@ void assertbasic (int v, const char *info)
  * \param v     The variable to be asserted
  * \param info  Part of the error message
  */
-void assertcobasic (int v, char *info)
+int assertcobasic (int v, char *info)
 {
     char s[INFOSTRINGLENGTH];
     if (TABCOL(v) < 0)   
     {
         vartoa(v, s);
         fprintf(stderr, "%s: Basic variable %s should be cobasic.\n", info, s);
-        errexit("");
+        /*errexit("");*/
+        return -1;
     }
+    return 1;
 }
 
 /**
@@ -575,12 +579,14 @@ void assertcobasic (int v, char *info)
  * \param leave The leaving variable
  * \param enter The entering variable
  */
-void docupivot (int leave, int enter, Flagsrunlemke flags)
+int docupivot (int leave, int enter, Flagsrunlemke flags)
 {
     char s[INFOSTRINGLENGTH];
 
-    assertbasic(leave, "docupivot");
-    assertcobasic(enter, "docupivot");
+    if (assertbasic(leave, "docupivot") < 0)
+        return -1;
+    if (assertcobasic(enter, "docupivot") < 0)
+        return -1;
     
     if(flags.boutpiv)
     {
@@ -589,6 +595,7 @@ void docupivot (int leave, int enter, Flagsrunlemke flags)
         vartoa(enter, s);
         printf("entering: %s\n", s);
     }
+    return 0;
 }       /* end of  docupivot    */
 
 /**
@@ -727,7 +734,8 @@ int lexminvar (int enter, int *z0leave)
         if (gpositive (A[i][col]))
         leavecand[numcand++] = i;
     if (numcand==0) 
-        raytermination(enter);
+        return -1;
+        /*raytermination(enter);*/
     if (numcand==1)
     {
         lextested[0]      += 1 ;
@@ -1021,15 +1029,19 @@ int bestResponse(int l)
 * \param flags The flags for running Lemke's algorithm
 */
 /* GSoC12: Tobenna Peter, Igwe */
-void fpivot(int leave, int enter, Flagsrunlemke flags)
+int fpivot(int leave, int enter, Flagsrunlemke flags)
 {
     testtablvars();
     if (flags.bdocupivot)
-        docupivot (leave, enter, flags);
+    {
+        if(docupivot (leave, enter, flags) < 0)
+            return -1;
+    }
     pivot (leave, enter);
     if (flags.bouttabl)
         outtabl();
     pivotcount++;
+    return 0;
 }
 
 /**
@@ -1175,7 +1187,7 @@ void getinvAB(int verbose)
 }
 
 /* ------------------------------------------------------------ */ 
-void runlemke(Flagsrunlemke flags)
+int runlemke(Flagsrunlemke flags)
 {
     int leave, enter, z0leave;
 
@@ -1203,8 +1215,10 @@ void runlemke(Flagsrunlemke flags)
     /* z0 enters the basis to obtain lex-feasible solution, or use the initialization  */
     /*enter = Z(0)*/ /*GSOC*/
     enter = flags.binteract ? Z(0) : initLH(flags);                                                   
-    leave = flags.binteract ? interactivevar(enter, &z0leave) :
-    lexminvar(enter, &z0leave) ;
+    leave = flags.binteract ? interactivevar(enter, &z0leave) : lexminvar(enter, &z0leave) ;
+    
+    if(leave < 0)
+        return -1;
 
     while (1)       /* main loop of complementary pivoting                  */
     {
@@ -1212,15 +1226,21 @@ void runlemke(Flagsrunlemke flags)
             flags.binteract = --flags.interactcount ? 1 : 0;
         testtablvars();
         if (flags.bdocupivot)
-            docupivot (leave, enter, flags);
+        {
+            if(docupivot (leave, enter, flags) < 0)
+                return -1;
+        }
         pivot (leave, enter);
         if (z0leave)
             break;  /* z0 will have value 0 but may still be basic. Amend?  */
         if (flags.bouttabl) 
             outtabl();
         enter = complement(leave);
-        leave = flags.binteract ? interactivevar(enter, &z0leave) :
-        lexminvar(enter, &z0leave) ;
+        leave = flags.binteract ? interactivevar(enter, &z0leave) : lexminvar(enter, &z0leave) ;
+        
+        if (leave < 0)
+            return -1;
+        
         if (pivotcount++ == flags.maxcount)
         {
             printf("------- stop after %d pivoting steps --------\n", 
@@ -1244,6 +1264,8 @@ void runlemke(Flagsrunlemke flags)
     /*GSOC: For test purpose only */
     if(flags.boutinvAB)
         getinvAB(flags.boutinvAB);
+    
+    return 0;
 } 
 
 /**
@@ -1399,9 +1421,13 @@ void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
         {
             setupEquilibrium(flags);
         }
-        runlemke(flags);
+        int err = runlemke(flags);
+        
+        if (err < 0)
+            continue;
         /* Create the equilibrium and add it to the list */
         eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n, nrows, ncols);
+        int plength = listlength(res);
         /* The equilibrium is at the index j in the list */
         int j = addEquilibrium(res, eq);
         /* Label k links both equilibria together */

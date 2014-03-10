@@ -135,12 +135,18 @@ void printlist(node* list)
 		colprEquilibrium(cur->eq);
 		int k;
 		colpr("Leads to: ");
-		for(k = 0; k < cur->eq.lcpdim - 2; ++k)
+        colpr("");
+		for(k = 0; k < cur->eq.nrows; ++k)
 		{
             sprintf(smp, "%d->%d ", k+1, cur->link[k]);
             colpr(smp);
 		}
-        colnl();
+        colpr("");
+		for(; k < cur->eq.lcpdim - 2; ++k)
+		{
+            sprintf(smp, "%d->%d ", k+1, cur->link[k]);
+            colpr(smp);
+		}
 		cur = cur->next;
 	}
 }

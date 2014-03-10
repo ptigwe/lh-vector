@@ -31,4 +31,6 @@ The file 'sample-output' shows the result of the program being run with the foll
 
 Changes:
 ============
-- Improved on the formatting options for output
+- Temporary fix for bug regarding restarting from an equilibrium of a degenerate game.
+  Ignore the cases which generate this error, and let their LH-paths lead to equilibrium -1,
+  which does not exist.

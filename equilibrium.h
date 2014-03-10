@@ -64,7 +64,7 @@ Equilibrium createEquilibrium(mp** A, mp* scfa, mp det, int* bascobas, int* whic
 /**
  * Creates an equilibrium structure given the information of the tableau.
  */
-Equilibrium createEquilibrium(gmpt** A, gmpt* scfa, gmpt det, int* bascobas, int* whichvar, int dim);
+Equilibrium createEquilibrium(gmpt** A, gmpt* scfa, gmpt det, int* bascobas, int* whichvar, int dim, int nrows, int ncols);
 #endif
 
 /**
@@ -75,6 +75,8 @@ Equilibrium createEquilibrium(gmpt** A, gmpt* scfa, gmpt det, int* bascobas, int
  * \sa createEquilibrium
  */
 void freeEquilibrium(Equilibrium eq);
+
+void colprEquilibrium(Equilibrium eq);
 
 /**
  * Prints the specifie equilibrium.

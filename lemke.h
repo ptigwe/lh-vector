@@ -88,7 +88,7 @@ typedef struct
  *
  * \param flags The flags for running Lemke's algorithm.
  */
-void runlemke(Flagsrunlemke flags);
+int runlemke(Flagsrunlemke flags);
 
 /** 
  * Compute all equilibria reachable by the Lemke-Howson algorithm.
