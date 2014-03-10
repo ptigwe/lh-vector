@@ -51,13 +51,15 @@ typedef struct equilibrium
 	int* bascobas;  /**< VARS  -> ROWCOL */
 	int* whichvar;  /**< ROWCOL -> VARS, inverse of bascobas  */
 	int lcpdim;     /**< Dimensions of the LCP */
+    int nrows;
+    int ncols;
 }Equilibrium;
 
 #ifndef GLEMKE
 /**
  * Creates an equilibrium structure given the information of the tableau.
  */
-Equilibrium createEquilibrium(mp** A, mp* scfa, mp det, int* bascobas, int* whichvar, int dim);
+Equilibrium createEquilibrium(mp** A, mp* scfa, mp det, int* bascobas, int* whichvar, int dim, int nrows, int ncols);
 #else
 /**
  * Creates an equilibrium structure given the information of the tableau.

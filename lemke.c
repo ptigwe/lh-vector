@@ -549,17 +549,20 @@ void assertcobasic (int v, char *info)
  * \param leave The leaving variable
  * \param enter The entering variable
  */
-void docupivot (leave, enter)
+void docupivot (int leave, int enter, Flagsrunlemke flags)
 {
     char s[INFOSTRINGLENGTH];
 
     assertbasic(leave, "docupivot");
     assertcobasic(enter, "docupivot");
 
-    vartoa(leave, s);
-    printf("leaving: %-4s ", s);
-    vartoa(enter, s);
-    printf("entering: %s\n", s);
+    if(flags.boutpiv)
+    {
+        vartoa(leave, s);
+        printf("leaving: %-4s ", s);
+        vartoa(enter, s);
+        printf("entering: %s\n", s);
+    }
 }       /* end of  docupivot    */
 
 /**
@@ -973,7 +976,7 @@ void fpivot(int leave, int enter, Flagsrunlemke flags)
 {
     testtablvars();
     if (flags.bdocupivot)
-        docupivot (leave, enter);
+        docupivot (leave, enter, flags);
     pivot (leave, enter);
     if (flags.bouttabl)
         outtabl();
@@ -1160,7 +1163,7 @@ void runlemke(Flagsrunlemke flags)
             flags.binteract = --flags.interactcount ? 1 : 0;
         testtablvars();
         if (flags.bdocupivot)
-            docupivot (leave, enter);
+            docupivot (leave, enter, flags);
         pivot (leave, enter);
         if (z0leave)
             break;  /* z0 will have value 0 but may still be basic. Amend?  */
@@ -1297,9 +1300,12 @@ void setupEquilibrium(Flagsrunlemke flags)
        /*A[i][TABCOL(Z(0))] = sol[i];*/
         copy(A[i][TABCOL(Z(0))], sol[i]);
     }
-    printf("\nTableau with new covering vector\n");
-    outtabl();
-    printf("\nRestarting with missing label: %d\n", k2);
+    if(flags.binitabl)
+    {
+        printf("\nTableau with new covering vector\n");
+        outtabl();
+        printf("\nRestarting with missing label: %d\n", k2);
+    }
 }
 
 /**
@@ -1339,13 +1345,24 @@ void computeEquilibriafromnode(int i, int isneg, Flagsrunlemke flags)
         }
         runlemke(flags);
         /* Create the equilibrium and add it to the list */
-        eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
+        eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n, nrows, ncols);
+        int plength = listlength(res);
         /* The equilibrium is at the index j in the list */
         int j = addEquilibrium(res, eq);
         /* Label k links both equilibria together */
         cur->link[k2-1] = j;
         node* p = getNodeat(res, j);
         p->link[k2-1] = i;
+        
+        if(flags.bouteq && plength != listlength(res))
+        {
+            colprEquilibrium(eq);
+        }
+        
+        if(flags.boutsol)
+        {
+            printEquilibrium(eq);
+        }
     }
 }
 
@@ -1362,19 +1379,28 @@ void computeEquilibria(Flagsrunlemke flags)
     pos = newnode(n-2);
 
     isqdok();
+    colset(n); 
     /*  printf("LCP seems OK.\n");      */
     filltableau();
     /*  printf("Tableau filled.\n");    */
 
     /* Store the artificial equilibrium */
-    Equilibrium eq =  createEquilibrium(A, scfa, det, bascobas, whichvar, n);
+    Equilibrium eq =  createEquilibrium(A, scfa, det, bascobas, whichvar, n, nrows, ncols);
     neg->eq = eq;
 
     /* Compute and store the first equilibrium */
     runlemke(flags);
-    eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n);
-    printEquilibrium(eq);
+    eq = createEquilibrium(A, scfa, det, bascobas, whichvar, n, nrows, ncols);
     pos->eq = eq;
+    
+    if(flags.bouteq)
+    {
+        colprEquilibrium(eq);
+    }
+    if(flags.boutsol)
+    {
+        printEquilibrium(eq);
+    }
 
     /* Label 1 links the first equilibrium from both list */
     neg->link[0] = 0; 
@@ -1409,11 +1435,28 @@ void computeEquilibria(Flagsrunlemke flags)
         if((negi == listlength(neg)) && (posi == listlength(pos)))
             break;
     }
-
-    printf("Equilibria discovered: %d\n", (listlength(neg) - 1 + listlength(pos)));
-    printf("%d-ve index:\n", negi);
-    printlist(neg);
-    printf("%d+ve index:\n", posi);
-    printlist(pos);
+    
+    colout();
+    if(flags.boutpath)
+    {
+        colset(n + 1);
+        int i;
+        for(i = 0; i < n + 1; ++i)
+        {
+            colleft(i);
+        }
+        char smp [2*DIG2DEC(MAX_DIGITS) + 4];
+        
+        printf("\nEquilibria discovered: %d\n", (listlength(neg) - 1 + listlength(pos)));
+        sprintf(smp, "\n%d-ve index:", negi);
+        colpr(smp);
+        colnl();
+        printlist(neg);
+        sprintf(smp, "\n%d+ve index:", posi);
+        colpr(smp);
+        colnl();
+        printlist(pos);
+        colout();
+    }
 }
 

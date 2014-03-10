@@ -514,21 +514,26 @@ int main(int argc, char *argv[])
 
     flags.maxcount   = 0;
     flags.bdocupivot = 1;
-    flags.binitabl   = 1;
+    flags.binitabl   = 0;
     flags.bouttabl   = 0;
-    flags.boutsol    = 1;
+    flags.boutsol    = 0;
     flags.binteract  = 0;
-    flags.blexstats  = 1;
+    flags.blexstats  = 0;
+    flags.bouteq = 0;
     flags.interactcount = 0;
     flags.binitmethod = 1;
     flags.boutinvAB = 0;
+    flags.boutpiv = 0;
     flags.bisArtificial = 1;
     /* parse options    */
-    while ( (c = getopt (argc, argv, "if:vI:ma")) != -1)
+    while ( (c = getopt (argc, argv, "if:vVI:maep")) != -1)
         switch (c)
         {
             case 'a':
                 flags.boutinvAB = 1;
+                break;
+            case 'e':
+                flags.bouteq = 1;
                 break;
             case 'I':
                 flags.interactcount = atoi(optarg);
@@ -539,12 +544,21 @@ int main(int argc, char *argv[])
             case 'f':
                 lcpout = fopen(optarg, "w+");
                 break;
-            case 'v':
-                flags.bouttabl   = 1;
+            case 'V':
+                flags.bouttabl = 1;
+                flags.blexstats  = 1;
                 printf("Verbose tableau output.\n");
+            case 'v':
+                flags.binitabl   = 1;
+                flags.boutpiv = 1;
+                flags.boutsol = 1;
+                flags.bouteq = 0;
                 break;
             case 'm':
                 flags.binitmethod = 0;
+                break;
+            case 'p':
+                flags.boutpath = 1;
                 break;
             case '?':
                 if (isprint (optopt))

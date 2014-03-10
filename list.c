@@ -125,17 +125,22 @@ node* getNodeat(node* list, int n)
 /* Prints all the elements in the list */
 void printlist(node* list)
 {
+    char smp [2*DIG2DEC(MAX_DIGITS) + 4];
 	node* cur = list;
 	int i = 0;
 	while(cur != NULL)
 	{
-		printf("\nEq[%d]: ", i++);
-		printEquilibrium(cur->eq);
+		sprintf(smp, "Eq[%d]: ", i++);
+        colpr(smp);
+		colprEquilibrium(cur->eq);
 		int k;
-		printf("Leads to: ");
+		colpr("Leads to: ");
 		for(k = 0; k < cur->eq.lcpdim - 2; ++k)
-			printf("%d->%d ", k+1, cur->link[k]);
-		printf("\n");
+		{
+            sprintf(smp, "%d->%d ", k+1, cur->link[k]);
+            colpr(smp);
+		}
+        colnl();
 		cur = cur->next;
 	}
 }

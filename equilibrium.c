@@ -21,7 +21,7 @@
 #define RHS(n)  (n+1)                   /*  q-column of tableau    */
 
 /* Create an equilibrium given the tableau representing it */
-Equilibrium createEquilibrium(mp** A, mp* scfa, mp det, int* bascobas, int* whichvar, int n)
+Equilibrium createEquilibrium(mp** A, mp* scfa, mp det, int* bascobas, int* whichvar, int n, int nrows, int ncols)
 {
 	Equilibrium eq;
 	
@@ -52,6 +52,8 @@ Equilibrium createEquilibrium(mp** A, mp* scfa, mp det, int* bascobas, int* whic
 	copy(eq.det, det);
 	
 	eq.lcpdim = n;
+    eq.nrows = nrows;
+    eq.ncols = ncols;
 	
 	return eq;
 }
@@ -105,24 +107,36 @@ Rat* getStrategies(Equilibrium eq)
 	return strat;
 }
 
-/* Print the equilibrium i.e the strategies being played */
-void printEquilibrium(Equilibrium eq)
+void colprEquilibrium(Equilibrium eq)
 {
-    char smp [2*DIG2DEC(MAX_DIGITS)+4];  
-            /* string to print 2 mp's  into                 */
+    char smp [2*DIG2DEC(MAX_DIGITS) + 4];
+    
     int i;
-	int n = eq.lcpdim;
-	
-	Rat* rats = getStrategies(eq);
+    int n = eq.lcpdim;
     
-    colset(n+1);    /* column printing to see complementarity of  w  and  z */
+    Rat *rats = getStrategies(eq);
     
-    colpr("sol=");
-	for(i = 2; i < n; ++i)
+    colpr("P1:");
+	for(i = 2; i < eq.nrows + 2; ++i)
 	{
 		rattoa(rats[i], smp);
 		colpr(smp);
 	}
+	
+    colpr("P2:");
+    for(; i < n; ++i)
+    {
+    	rattoa(rats[i], smp);
+    	colpr(smp);
+    }
+}
+
+/* Print the equilibrium i.e the strategies being played */
+void printEquilibrium(Equilibrium eq)
+{
+    int n = eq.lcpdim;
+    colset(n+2);    /* column printing to see complementarity of  w  and  z */
+    colprEquilibrium(eq);
     colout();
 }
 

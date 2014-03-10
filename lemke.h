@@ -67,10 +67,13 @@ typedef struct
     int   maxcount  ;   /**< Maximum number of iterations, infinity if 0         */
     int   bdocupivot;   /**< Y/N  document pivot step                     */
     int   binitabl ;    /**< Y/N  output entire tableau at beginning/end  */
+    int   boutpiv  ;    /**< Y/N  output current pivot step */
     int   bouttabl  ;   /**< Y/N  output entire tableau at each step      */
     int   boutsol   ;   /**< Y/N  output solution                         */
     int   binteract ;   /**< Y/N  interactive pivoting                    */
     int   blexstats ;   /**< Y/N  statistics on lexminratio tests         */
+    int   bouteq;       /**< Y/N  Immediately output equilibrium */
+    int   boutpath;     /**< Y/N  output the LH path */
     int   interactcount;/**< Number of interactive entries                *//* GSoC12: Tobenna Peter, Igwe */
 	int   binitmethod;  /**< Used to select the initialisation method     *//* GSoC12: Tobenna Peter, Igwe */
     int   boutinvAB;	/**< Y/N  output inverse of A_B                   *//* GSoC12: Tobenna Peter, Igwe */

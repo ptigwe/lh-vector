@@ -134,12 +134,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 91
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     88  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.5  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-sol= 1/30 1/6 3/10 3/10 1/6 1/30 1/6 1/30 3/10 3/10 1/30 1/6
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -212,11 +207,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 27
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     24  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 4.7  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -289,11 +280,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 27
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     24  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.1  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -366,11 +353,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 27
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     24  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.1  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -443,11 +426,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 27
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     24  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 4.7  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -584,11 +563,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 91
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     88  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.5  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -673,11 +648,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 39
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     36  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.1  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -762,11 +733,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 39
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     36  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.4  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -831,11 +798,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 19
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     16  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 4.2  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -900,11 +863,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 19
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     16  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 4.2  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -989,11 +948,7 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 39
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     36  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.4  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
 After filltableau:
 Determinant: -1
 var  z0 z1 z2  z3  z4  z5  z6  z7  z8  z9 z10 z11 z12 z13 z14 RHS
@@ -1078,17 +1033,15 @@ basis=       z1    z2   z3  z4   z5   z6  z7   z8  z9  z10  z11  z12  z13 z14
     w=        0     0    0   0    0    0   0    0   0    0    0    0    0   0
 
  Number of pivots: 39
-lex-column        0  1  2  3  4  5  6  7  8  9 10 11 12 13 14
-                                                             
-times tested     36  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-% times tested  100  0  0  0  0  0  0  0  0  0  0  0  0  0  0
-avg comparisons 5.1  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
+P1: 1/30 1/6 3/10 3/10 1/6 1/30 P2: 1/6 1/30 3/10 3/10 1/30 1/6
+
 Equilibria discovered: 1
-1-ve index:
 
-Eq[0]: sol= 0 0 0 0 0 0 0 0 0 0 0 0
-Leads to: 1->0 2->0 3->0 4->0 5->0 6->0 7->0 8->0 9->0 10->0 11->0 12->0 
-1+ve index:
+1-ve index:                                                                                    
+Eq[0]:       P1:   0     0     0     0     0     0     P2:   0     0      0      0      0    0  
+Leads to:    1->0  2->0  3->0  4->0  5->0  6->0  7->0  8->0  9->0  10->0  11->0  12->0          
 
-Eq[0]: sol= 1/30 1/6 3/10 3/10 1/6 1/30 1/6 1/30 3/10 3/10 1/30 1/6
-Leads to: 1->0 2->0 3->0 4->0 5->0 6->0 7->0 8->0 9->0 10->0 11->0 12->0 
+1+ve index:                                                                                    
+Eq[0]:       P1:   1/30  1/6   3/10  3/10  1/6   1/30  P2:   1/6   1/30   3/10   3/10   1/30 1/6
+Leads to:    1->0  2->0  3->0  4->0  5->0  6->0  7->0  8->0  9->0  10->0  11->0  12->0          
