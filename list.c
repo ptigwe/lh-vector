@@ -123,14 +123,14 @@ node* getNodeat(node* list, int n)
 }
 
 /* Prints all the elements in the list */
-void printlist(node* list)
+void printlist(node* list, char prefix)
 {
     char smp [2*DIG2DEC(MAX_DIGITS) + 4];
 	node* cur = list;
 	int i = 0;
 	while(cur != NULL)
 	{
-		sprintf(smp, "Eq[%d]: ", i++);
+		sprintf(smp, "%cEq[%d]: ", prefix, i++);
         colpr(smp);
 		colprEquilibrium(cur->eq);
 		int k;

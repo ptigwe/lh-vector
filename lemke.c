@@ -537,9 +537,10 @@ int assertcobasic (int v, char *info)
     char s[INFOSTRINGLENGTH];
     if (TABCOL(v) < 0)   
     {
+        /*
         vartoa(v, s);
         fprintf(stderr, "%s: Basic variable %s should be cobasic.\n", info, s);
-        /*errexit("");*/
+        errexit("");*/
         return -1;
     }
     return 0;
@@ -1478,11 +1479,11 @@ void computeEquilibria(Flagsrunlemke flags)
         sprintf(smp, "\n%d-ve index:", negi);
         colpr(smp);
         colnl();
-        printlist(neg);
+        printlist(neg, 'N');
         sprintf(smp, "\n%d+ve index:", posi);
         colpr(smp);
         colnl();
-        printlist(pos);
+        printlist(pos, 'P');
         colout();
     }
 }

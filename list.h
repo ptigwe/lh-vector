@@ -82,6 +82,6 @@ int listlength(node* list);
 /**
  * Prints all the elements in the list.
  */
-void printlist(node* list);
+void printlist(node* list, char prefix);
 
 #endif
