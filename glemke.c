@@ -792,16 +792,9 @@ int lexminvar (int enter, int *z0leave)
                     }
         }   /* end of  if(testcol != col)                           */
 
-        if (j==0)
-        /* seek  z0  among the first-col leaving candidates     */
-            for (i=0; i<numcand; i++)
-            if ( (*z0leave = (leavecand[i] == bascobas[Z(0)])) )
-            break;
-            /* alternative, to force z0 leaving the basis:
-            * return whichvar[leavecand[i]];
-            */
     }       /* end of  for ( ... numcand > 1 ... )   */
     gclear(tmp1); gclear(tmp2); 
+    *z0leave = (leavecand[0] == bascobas[Z(0)]);
     return whichvar[leavecand[0]];
 }       /* end of lexminvar (col, *z0leave);                        */
 
@@ -996,6 +989,8 @@ int bestResponse(int l)
         {
             if(ratgreat(payoffA[m][l], payoffA[i][l]))
                 m = i;
+            if(ratiseq(payoffA[m][l], payoffA[i][l])) /* Due to lexmin ratio */
+                m = i;
         }
         /* Converts m to p1's strategy */
         m += 1;
@@ -1011,6 +1006,8 @@ int bestResponse(int l)
         for(i = 1; i < ncols; ++i)
         {
             if(ratgreat(payoffB[l][m], payoffB[l][i]))
+                m = i;
+            if(ratiseq(payoffB[l][m], payoffB[l][i])) /* Due to lexmin ratio */
                 m = i;
         }
         /* Converts m to p2's strategy */
@@ -1069,6 +1066,10 @@ int fpivot(int leave, int enter, Flagsrunlemke flags)
 
     fpivot(leave, enter, flags);
 
+    enter = complement(leave);
+    leave = W(k + 2);
+    fpivot(leave, enter, flags);
+    
     return leave;
 }
 
@@ -1115,7 +1116,7 @@ int initLH2(Flagsrunlemke flags)
 int initLH(Flagsrunlemke flags)
 {
     if(flags.bisArtificial)
-        return flags.binitmethod ? complement(initLH1(flags)) : complement(initLH2(flags));
+        return flags.binitmethod ? complement(initLH2(flags)) : complement(initLH1(flags));
     else
         return Z(0);
 }
